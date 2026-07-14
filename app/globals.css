@@ -19,6 +19,9 @@
 @theme {
   --font-sans: var(--font-inter), system-ui, sans-serif;
 
+  /* Geist Pixel — display face for the /dither-kit docs page only. */
+  --font-pixel-geist: "Geist Pixel", ui-monospace, monospace;
+
   /*
    * The frame used 18px/14px corners and full pills. Both were dialled back:
    * 10px on tablet/desktop, 5px on mobile, applied to the hero asset and every
@@ -26,6 +29,15 @@
    */
   --radius-tight: 2.5px; /* mobile — sub-pixel is fine, phones are 2x/3x DPR */
   --radius-ui: 5px; /* tablet + desktop */
+}
+
+/* Display face for the /dither-kit docs page. */
+@font-face {
+  font-family: "Geist Pixel";
+  src: url("/fonts/GeistPixel-Square.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -295,6 +307,53 @@ body {
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
   }
+}
+/*
+ ---break---
+ */
+/*
+ * /dither-kit docs page — a self-contained port from tripwire. Its colours are
+ * HARDCODED here (tripwire's exact values) and scoped to the `.dk-docs` wrapper,
+ * so the page is immune to this site's OS-driven theme and its own light/dark
+ * toggle (`.dither-light`) works. These override the shadcn token vars that the
+ * page's `bg-background` / `text-foreground` / `bg-card` / `border` utilities
+ * resolve through — only inside `.dk-docs`, nothing else on the site is touched.
+ */
+.dk-docs {
+  /* dark (default) */
+  --background: #0d0d0f;
+  --foreground: #eeeeee;
+  --card: #17171a;
+  --card-foreground: #eeeeee;
+  --popover: #202023;
+  --popover-foreground: #eeeeee;
+  --border: #27272a;
+  --muted: #202023;
+  --muted-foreground: #b4b4b4;
+  --primary: #34a6ff;
+  --primary-foreground: #ffffff;
+  --accent: #25252a;
+  --accent-foreground: #eeeeee;
+  --bg: var(--background);
+  --fg: var(--foreground);
+}
+.dk-docs.dither-light {
+  /* light (theme toggle) */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.141 0.005 285.823);
+  --card: oklch(0.985 0 0);
+  --card-foreground: oklch(0.141 0.005 285.823);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.141 0.005 285.823);
+  --border: oklch(0.92 0.004 286.32);
+  --muted: oklch(0.967 0.001 286.375);
+  --muted-foreground: oklch(0.552 0.016 285.938);
+  --primary: oklch(0.21 0.006 285.885);
+  --primary-foreground: oklch(0.985 0 0);
+  --accent: oklch(0.967 0.001 286.375);
+  --accent-foreground: oklch(0.21 0.006 285.885);
+  --bg: var(--background);
+  --fg: var(--foreground);
 }
 /*
  ---break---
