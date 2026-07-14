@@ -31,8 +31,8 @@
    * 10px on tablet/desktop, 5px on mobile, applied to the hero asset and every
    * button. An approved deviation from the frame — see README.
    */
-  --radius-tight: 5px; /* mobile */
-  --radius-ui: 10px; /* tablet + desktop */
+  --radius-tight: 2.5px; /* mobile — sub-pixel is fine, phones are 2x/3x DPR */
+  --radius-ui: 5px; /* tablet + desktop */
 }
 
 @media (prefers-reduced-motion: no-preference) {
