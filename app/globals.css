@@ -1,29 +1,22 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+/*
+ ---break---
+ */
+@custom-variant dark (&:is(.dark *));
 
 /*
  * Design tokens extracted from the Paper frame "Tripwire Landing".
- * All colors used by components come from this theme — no scattered hex values.
+ *
+ * The palette is dark-first (the frame is dark) and mirrored for light in a
+ * `prefers-color-scheme` block below. Every colour utility maps to a themeable
+ * `var()` via `@theme inline` — the actual light/dark values live in `:root`,
+ * so a single source drives both modes. Nothing here is a static hex, which is
+ * what previously left `text-foreground` stuck on the shadcn light value and
+ * rendered dark-on-dark buttons.
  */
 @theme {
-  --color-background: #0e0e0e;
-  --color-foreground: #ffffff;
-  --color-muted: #969696; /* body copy on dark */
-  /*
-   * Footer links + CTA/FAQ sub-copy. The frame specifies #5A5A5A, which is
-   * 2.8:1 on the background and fails WCAG AA. Lightened to the nearest neutral
-   * that clears AA for normal text (5.6:1). This is a deliberate, approved
-   * deviation from the frame — see README.
-   */
-  --color-faint: #8a8a8a;
-  --color-dim: #929292; /* inactive tab labels */
-  --color-line: #232323; /* section hairlines */
-  --color-line-strong: #2a2a2a; /* FAQ rows, footer bottom bar, secondary button border */
-  --color-surface: #191919; /* secondary button, tab rail */
-  --color-surface-active: #232323; /* active tab pill */
-  --color-panel: #0f0f11; /* events panel */
-  --color-panel-line: #2a2a2e;
-  --color-backdrop: #0a0a0b; /* hero screenshot backdrop */
-
   --font-sans: var(--font-inter), system-ui, sans-serif;
 
   /*
@@ -42,8 +35,8 @@
 }
 
 body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+  background-color: var(--bg);
+  color: var(--fg);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -51,7 +44,7 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-foreground);
+  outline: 2px solid var(--fg);
   outline-offset: 2px;
 }
 
@@ -130,5 +123,190 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .faq-panel {
     transition: none;
+  }
+}
+/*
+ ---break---
+ */
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  /* Brand utilities — the ones the landing sections actually use. */
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+  --color-muted: var(--fg-muted);
+  --color-faint: var(--fg-faint);
+  --color-dim: var(--fg-dim);
+  --color-line: var(--brand-line);
+  --color-line-strong: var(--brand-line-strong);
+  --color-surface: var(--brand-surface);
+  --color-surface-active: var(--brand-surface-active);
+  --color-panel: var(--brand-panel);
+  --color-panel-line: var(--brand-panel-line);
+  --color-backdrop: var(--brand-backdrop);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+/*
+ ---break---
+ */
+/*
+ * Dark is the default — the frame's primary look. Both the brand palette and
+ * the shadcn token set are defined here; `prefers-color-scheme: light` below
+ * mirrors them. A `.dark` class is intentionally not required: the site tracks
+ * the OS, so there's no flash and no toggle to wire up.
+ */
+:root {
+  color-scheme: dark;
+
+  /* Brand palette (dark). */
+  --bg: #0e0e0e;
+  --fg: #ffffff;
+  --fg-muted: #969696; /* body copy */
+  /*
+   * Footer links + CTA/FAQ sub-copy. The frame's #5A5A5A is 2.8:1 and fails
+   * AA; lightened to the nearest neutral that clears AA (5.6:1). Approved
+   * deviation from the frame — see README.
+   */
+  --fg-faint: #8a8a8a;
+  --fg-dim: #929292; /* inactive tab labels */
+  --brand-line: #232323; /* section hairlines */
+  --brand-line-strong: #2a2a2a; /* FAQ rows, footer bar, secondary button border */
+  --brand-surface: #191919; /* secondary button, tab rail */
+  --brand-surface-active: #232323; /* active tab pill */
+  --brand-panel: #0f0f11; /* events panel */
+  --brand-panel-line: #2a2a2e;
+  --brand-backdrop: #0a0a0b; /* hero screenshot backdrop */
+
+  /* shadcn tokens (dark) — used by components/ui/*. */
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+/*
+ ---break---
+ */
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+
+    /* Brand palette (light) — a soft near-white ground, not stark #fff. */
+    --bg: #ffffff;
+    --fg: #0f0f10;
+    --fg-muted: #5b5b60; /* body copy — 6.0:1 on #fff */
+    --fg-faint: #6c6c72; /* sub-copy / placeholders — 4.9:1 */
+    --fg-dim: #6c6c72;
+    --brand-line: #ececee; /* section hairlines */
+    --brand-line-strong: #dcdce0; /* rows, footer bar, secondary button border */
+    --brand-surface: #f4f4f6; /* secondary button, tab rail */
+    --brand-surface-active: #e9e9ed; /* active tab pill */
+    --brand-panel: #f7f7f9; /* events panel */
+    --brand-panel-line: #e4e4e8;
+    --brand-backdrop: #ececed; /* hero screenshot backdrop */
+
+    /* shadcn tokens (light). */
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
+  }
+}
+/*
+ ---break---
+ */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
   }
 }

@@ -1,10 +1,9 @@
 import Image from "next/image";
-import heroDashboard from "@/public/visuals/hero-dashboard.webp";
 import heroBackdrop from "@/public/visuals/hero-backdrop.webp";
 import { HERO } from "@/lib/content";
 import Reveal from "@/components/Reveal";
 import WaitlistCta from "@/components/WaitlistCta";
-import InteractiveShot from "@/components/InteractiveShot";
+import HeroDemo from "@/components/HeroDemo";
 
 export default function Hero() {
   return (
@@ -35,15 +34,13 @@ export default function Hero() {
         </Reveal>
         <Reveal delay={100}>
           {/*
-           * The frame bakes the dashboard into a padded backdrop frame. That
-           * padding is rebuilt here in CSS so the screenshot fills its own
-           * container — and the frame's flat dark backdrop is replaced by the
-           * landscape painting, which shows through the padding around the app.
-           *
-           * The painting is decorative (alt=""): it carries no information the
-           * page doesn't already say in text.
+           * OUTSET — the backdrop-painting frame that holds the demo. It's
+           * padded on the top and sides only; the bottom is flush, and its
+           * `overflow-hidden` clips the INSET's lower edge. The painting is
+           * decorative (alt="") — it carries no information the page doesn't
+           * already say in text.
            */}
-          <div className="relative overflow-hidden rounded-tight bg-backdrop p-5 sm:p-10 md:rounded-ui lg:p-16">
+          <div className="relative overflow-hidden rounded-tight bg-backdrop md:rounded-ui">
             {/*
              * Decoration, so it is tuned for weight over fidelity: the source is
              * pre-cropped to this container's aspect (no pixels thrown away by
@@ -60,15 +57,24 @@ export default function Hero() {
               sizes="(max-width: 1536px) 100vw, 1472px"
               className="object-cover"
             />
-            <InteractiveShot
-              src={heroDashboard}
-              alt={HERO.screenshotAlt}
-              priority
-              sizes="(max-width: 1536px) 100vw, 1440px"
-              hotspots={HERO.hotspots}
-              className="relative overflow-hidden rounded-tight shadow-2xl ring-1 ring-black/20 md:rounded-ui"
-              imageClassName="h-auto w-full"
-            />
+            {/*
+             * Top + side padding frames the inset with the painting; no bottom
+             * padding, so the demo runs to the outset's bottom edge and is
+             * concealed there. `-mb-px` bleeds it a hair past the edge so the
+             * outset's clip — not the inset's own border — hides the bottom.
+             */}
+            <div className="relative -mb-px px-5 pt-5 sm:px-10 sm:pt-10 lg:px-16 lg:pt-16">
+              {/*
+               * The moderation dashboard, formerly a flat screenshot, is now a
+               * live recreation whose stat-card wells carry real dither-kit
+               * sparklines. Only the top corners round — the bottom tucks under
+               * the outset, which owns the concealment and the scroll reveal.
+               */}
+              <HeroDemo
+                aria-label={HERO.screenshotAlt}
+                className="rounded-t-tight shadow-2xl ring-1 ring-black/20 md:rounded-t-ui"
+              />
+            </div>
           </div>
         </Reveal>
       </div>
