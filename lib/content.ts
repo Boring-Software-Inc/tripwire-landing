@@ -22,10 +22,14 @@ export const NAV_LINKS = [
   { label: "Docs", href: "#faq" },
 ] as const;
 
-export const NAV_ACCESS = { label: "Already have access?", href: "#" }; // future app login
+export const NAV_ACCESS = {
+  label: "Already have access?",
+  href: "https://app.tripwire.sh",
+};
 export const NAV_CTA = { label: "Waitlist", href: "#cta" };
 
 export const HERO = {
+  badge: "Closed beta",
   headline: "The firewall for your OSS projects",
   subhead:
     "Trigger workflows from contributor activity. Keep the good, reject the bad.",
@@ -108,8 +112,8 @@ export const FEATURES: Feature[] = [
     body: [
       "See a detailed log of events such as PR creation, or comments. Events can be displayed by severity, type, or time, whatever makes sense to you.",
     ],
-    linkLabel: "Browse events",
-    linkHref: "#",
+    linkLabel: "Join the beta to see it live",
+    linkHref: "#cta",
     visual: "right",
     image: {
       src: "/visuals/events-panel.webp",
@@ -139,8 +143,8 @@ export const FEATURES: Feature[] = [
       "Account age, rate limits, hidden links, max files changed; get multiple composable rules in one workflow.",
       "Org members are exempt and there's evidence on every run.",
     ],
-    linkLabel: "See rules",
-    linkHref: "#",
+    linkLabel: "Get early access to rules",
+    linkHref: "#cta",
     visual: "left",
     image: {
       src: "/visuals/rules-panel.webp",
@@ -171,8 +175,8 @@ export const FEATURES: Feature[] = [
       "Triggers, rules, gates, actions. all-of / any-of. needs_review pauses for moderation.",
       "Every run snapshots the definition so history stays honest.",
     ],
-    linkLabel: "Browse workflows",
-    linkHref: "#",
+    linkLabel: "Request an invite",
+    linkHref: "#cta",
     visual: "right",
     image: {
       src: "/visuals/workflow-canvas.webp",
@@ -193,8 +197,8 @@ export const FEATURES: Feature[] = [
     body: [
       "One sentence explanations. Maintainers can view a detailed explanation on Tripwire. Contributors never get an essay.",
     ],
-    linkLabel: "See the PR surface",
-    linkHref: "#",
+    linkLabel: "Claim your spot on the waitlist",
+    linkHref: "#cta",
     visual: "left",
     image: {
       src: "/visuals/pr-comment.webp",

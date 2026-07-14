@@ -10,7 +10,8 @@ export default function Home() {
   return (
     <>
       <Nav />
-      <main>
+      {/* tabIndex -1 so the skip link can move focus here, not just scroll */}
+      <main id="main" tabIndex={-1}>
         <Hero />
         {FEATURES.map((feature) => (
           <FeatureSection

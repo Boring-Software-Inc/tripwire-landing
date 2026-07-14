@@ -50,6 +50,13 @@ These three gaps in the frame were resolved deliberately, with sign-off — the 
 ## Still open
 
 - **Hover states are not defined in the frame** — minimal opacity/color transitions (~150 ms) were derived from the existing palette. The same applies to the mobile menu, which the frame does not design at all (it has no mobile artboard): the hamburger, its ease-in-out open/close, and its hover states are all inventions.
+- **Closed-beta additions** (not in the frame): a "Closed beta" badge above the hero headline, and a skip-to-content link. The four feature sections' text links pointed nowhere during closed beta, so they now drive to the waitlist (`#cta`) with distinct copy per section rather than sitting dead.
+
+## Known gaps before launch
+
+- **`POST /api/waitlist` stores nothing.** It validates the email and returns success — the `// TODO: connect provider` is still open. Every signup is currently discarded. Owner: cofounder.
+- **No privacy policy / terms.** The footer links are `#` placeholders, while the page collects email addresses. Owner: cofounder.
+- No analytics (mount point commented in `app/layout.tsx`), no rate limiting or honeypot on the waitlist route, and `metadataBase` is still a placeholder domain.
 - `metadataBase` in `app/layout.tsx` is a placeholder domain — set the real one before launch.
 - "Docs" nav link points at `#faq` until a docs site exists (repoint in `lib/content.ts` → `NAV_LINKS`).
 - All footer / feature links that have no destination yet are `#` placeholders grouped in `lib/content.ts`.

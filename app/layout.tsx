@@ -46,6 +46,16 @@ export default function RootLayout({
             __html: "document.documentElement.classList.add('js')",
           }}
         />
+        {/*
+         * Skip link: visually hidden until focused, so a keyboard user can jump
+         * past the nav instead of tabbing through it on every visit.
+         */}
+        <a
+          href="#main"
+          className="skip-link rounded-tight bg-foreground px-4 py-2 text-sm font-medium text-background md:rounded-ui"
+        >
+          Skip to content
+        </a>
         {children}
         {/* Analytics mount point: add the tracking snippet here when ready */}
       </body>

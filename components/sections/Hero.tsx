@@ -13,6 +13,18 @@ export default function Hero() {
           stranded from the section below on a small screen. */}
       <div className="mx-auto w-full max-w-[1536px] px-8 sm:px-12 lg:px-20 py-12 md:py-24">
         <Reveal className="mb-12 max-w-[654px]">
+          {/*
+           * Sets expectations up front: the CTA band says "Install the GitHub
+           * App", which you can't actually do yet. The badge makes the gating
+           * read as deliberate rather than broken.
+           */}
+          <p className="mb-5 inline-flex items-center gap-2 rounded-tight border border-line-strong bg-surface px-2.5 py-1 text-xs/[1.4] font-medium text-muted md:rounded-ui">
+            <span
+              aria-hidden="true"
+              className="size-1.5 rounded-full bg-foreground"
+            />
+            {HERO.badge}
+          </p>
           <h1 className="mb-4 text-[36px]/[1.25] font-medium text-balance text-foreground">
             {HERO.headline}
           </h1>
