@@ -1,6 +1,6 @@
 import { CTA_BAND } from "@/lib/content";
 import Reveal from "@/components/Reveal";
-import WaitlistCta from "@/components/WaitlistCta";
+import RequestAccessCta from "@/components/RequestAccessCta";
 
 export default function CtaBand() {
   return (
@@ -12,7 +12,7 @@ export default function CtaBand() {
           </h2>
           <p className="mt-6 text-lg/[1.625] text-faint">{CTA_BAND.subhead}</p>
           <div className="mt-10">
-            <WaitlistCta label={CTA_BAND.cta} size="sm" align="center" />
+            <RequestAccessCta label={CTA_BAND.cta} size="sm" align="center" />
           </div>
         </Reveal>
       </div>

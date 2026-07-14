@@ -26,14 +26,14 @@ export const NAV_ACCESS = {
   label: "Already have access?",
   href: "https://app.tripwire.sh",
 };
-export const NAV_CTA = { label: "Waitlist", href: "#cta" };
+export const NAV_CTA = { label: "Request access", href: "#cta" };
 
 export const HERO = {
   badge: "Closed beta",
   headline: "The firewall for your OSS projects",
   subhead:
     "Trigger workflows from contributor activity. Keep the good, reject the bad.",
-  cta: "Join the waitlist",
+  cta: "Request access",
   screenshotAlt:
     "Tripwire moderation dashboard triaging flagged issues, pull requests, and comments across an organization",
   /*
@@ -217,7 +217,7 @@ export const CTA_BAND = {
   headline: "Block noise. Pass signal.",
   subhead:
     "Install the GitHub App. Workflows evaluate every change request. Runs are public; deciding stays gated.",
-  cta: "Join Waitlist",
+  cta: "Request access",
 };
 
 /*
@@ -291,9 +291,15 @@ export const FOOTER_BOTTOM = {
   ],
 } as const;
 
-export const WAITLIST = {
-  placeholder: "you@example.com",
-  submit: "Join",
-  success: "You're on the list",
-  genericError: "Something went wrong. Please try again.",
+/*
+ * Access requests run through GitHub sign-in on the app domain — the landing
+ * site only links out, it makes no API calls. Same origin as NAV_ACCESS.
+ * In dev the link targets the app's local dev server so the flow can be
+ * tested end-to-end without touching production.
+ */
+export const REQUEST_ACCESS = {
+  href:
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:3000/login"
+      : "https://app.tripwire.sh/login",
 };
