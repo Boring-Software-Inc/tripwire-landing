@@ -4,7 +4,7 @@ import { Logo } from "@/components/icons";
 export default function Footer() {
   return (
     <footer className="border-t border-line">
-      <div className="mx-auto w-full max-w-[1280px] px-8 py-12">
+      <div className="mx-auto w-full max-w-[1280px] px-8 sm:px-12 lg:px-20 py-12">
         <div className="mb-12 grid gap-8 sm:grid-cols-3">
           {FOOTER_COLUMNS.map((column) => (
             <div key={column.heading}>

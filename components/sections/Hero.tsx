@@ -1,4 +1,6 @@
+import Image from "next/image";
 import heroDashboard from "@/public/visuals/hero-dashboard.webp";
+import heroBackdrop from "@/public/visuals/hero-backdrop.webp";
 import { HERO } from "@/lib/content";
 import Reveal from "@/components/Reveal";
 import WaitlistCta from "@/components/WaitlistCta";
@@ -7,7 +9,9 @@ import InteractiveShot from "@/components/InteractiveShot";
 export default function Hero() {
   return (
     <section id="hero" className="scroll-mt-20 pt-16">
-      <div className="mx-auto w-full max-w-[1536px] px-8 py-24">
+      {/* py halved on mobile — the full 96px top and bottom left the hero
+          stranded from the section below on a small screen. */}
+      <div className="mx-auto w-full max-w-[1536px] px-8 sm:px-12 lg:px-20 py-12 md:py-24">
         <Reveal className="mb-12 max-w-[654px]">
           <h1 className="mb-4 text-[36px]/[1.25] font-medium text-balance text-foreground">
             {HERO.headline}
@@ -20,18 +24,37 @@ export default function Hero() {
         <Reveal delay={100}>
           {/*
            * The frame bakes the dashboard into a padded backdrop frame. That
-           * padding is rebuilt here in CSS (bg + radial gradient + radius, per
-           * the frame) so the screenshot itself can fill the container instead
-           * of being inset inside the exported image.
+           * padding is rebuilt here in CSS so the screenshot fills its own
+           * container — and the frame's flat dark backdrop is replaced by the
+           * landscape painting, which shows through the padding around the app.
+           *
+           * The painting is decorative (alt=""): it carries no information the
+           * page doesn't already say in text.
            */}
-          <div className="overflow-hidden rounded-shot bg-backdrop bg-[radial-gradient(circle_farthest-corner_at_50%_50%_in_oklab,oklab(64.7%_-0.047_-0.165_/_10%)_0%,oklab(14.5%_0.0006_-0.002_/_0%)_55%)] p-4 sm:p-6 lg:p-8">
+          <div className="relative overflow-hidden rounded-tight bg-backdrop p-5 sm:p-10 md:rounded-ui lg:p-16">
+            {/*
+             * Decoration, so it is tuned for weight over fidelity: the source is
+             * pre-cropped to this container's aspect (no pixels thrown away by
+             * object-cover) and served at q=65. At full res it was a 736 kB
+             * download sitting right next to the LCP.
+             */}
+            <Image
+              src={heroBackdrop}
+              alt=""
+              aria-hidden="true"
+              fill
+              priority
+              quality={65}
+              sizes="(max-width: 1536px) 100vw, 1472px"
+              className="object-cover"
+            />
             <InteractiveShot
               src={heroDashboard}
               alt={HERO.screenshotAlt}
               priority
-              sizes="(max-width: 1536px) 100vw, 1472px"
+              sizes="(max-width: 1536px) 100vw, 1440px"
               hotspots={HERO.hotspots}
-              className="overflow-hidden rounded-panel"
+              className="relative overflow-hidden rounded-tight shadow-2xl ring-1 ring-black/20 md:rounded-ui"
               imageClassName="h-auto w-full"
             />
           </div>

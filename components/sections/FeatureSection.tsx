@@ -23,7 +23,7 @@ export default function FeatureSection({
       id={id}
       className={`scroll-mt-20 ${bordered ? "border-b border-line" : ""}`}
     >
-      <div className="mx-auto w-full max-w-[1280px] px-8 py-24">
+      <div className="mx-auto w-full max-w-[1280px] px-8 sm:px-12 lg:px-20 py-12 md:py-24">
         <div className="grid items-center gap-16 md:grid-cols-2">
           <Reveal className={visual === "left" ? "md:order-2" : undefined}>
             <div className="flex flex-col gap-5">

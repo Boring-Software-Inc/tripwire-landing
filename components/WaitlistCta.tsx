@@ -32,8 +32,8 @@ export default function WaitlistCta({
 
   const buttonClasses =
     size === "md"
-      ? "rounded-full bg-foreground px-[10.5px] pt-[5.6px] pb-[5.88px] text-[16px]/[1.5] font-medium text-background"
-      : "rounded-full bg-foreground px-[17.5px] pt-[7px] pb-[7.28px] text-sm/[1.43] font-medium text-background";
+      ? "rounded-tight md:rounded-ui bg-foreground px-[10.5px] pt-[5.6px] pb-[5.88px] text-[16px]/[1.5] font-medium text-background"
+      : "rounded-tight md:rounded-ui bg-foreground px-[17.5px] pt-[7px] pb-[7.28px] text-sm/[1.43] font-medium text-background";
 
   const justify = align === "center" ? "justify-center" : "justify-start";
 
@@ -100,12 +100,12 @@ export default function WaitlistCta({
           placeholder={WAITLIST.placeholder}
           aria-label="Email address"
           aria-invalid={status === "error" || undefined}
-          className="w-64 max-w-full rounded-full border border-line-strong bg-surface px-4 py-1.5 text-sm text-foreground placeholder:text-faint"
+          className="w-64 max-w-full rounded-tight border border-line-strong bg-surface px-4 py-1.5 text-sm text-foreground placeholder:text-faint md:rounded-ui"
         />
         <button
           type="submit"
           disabled={status === "loading"}
-          className="cursor-pointer rounded-full bg-foreground px-[17.5px] py-[7px] text-sm font-medium text-background transition-opacity duration-150 hover:opacity-85 disabled:opacity-60"
+          className="cursor-pointer rounded-tight bg-foreground px-[17.5px] py-[7px] text-sm font-medium text-background transition-opacity duration-150 hover:opacity-85 disabled:opacity-60 md:rounded-ui"
         >
           {status === "loading" ? "…" : WAITLIST.submit}
         </button>

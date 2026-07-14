@@ -10,7 +10,7 @@ export default function Faq() {
 
   return (
     <section id="faq" className="scroll-mt-20 border-t border-line">
-      <div className="mx-auto w-full max-w-[1280px] px-8 py-24">
+      <div className="mx-auto w-full max-w-[1280px] px-8 sm:px-12 lg:px-20 py-24">
         <div className="grid gap-12 md:grid-cols-2">
           <Reveal>
             <h2 className="text-[36px]/[1.11] font-medium text-foreground">

@@ -5,7 +5,7 @@ import WaitlistCta from "@/components/WaitlistCta";
 export default function CtaBand() {
   return (
     <section id="cta" className="scroll-mt-20 border-t border-line">
-      <div className="px-8 py-24">
+      <div className="px-8 py-24 sm:px-12 lg:px-20">
         <Reveal className="mx-auto max-w-3xl text-center">
           <h2 className="text-5xl/[1] font-medium tracking-[-1.2px] text-foreground">
             {CTA_BAND.headline}

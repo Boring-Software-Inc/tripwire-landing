@@ -32,30 +32,36 @@ export const HERO = {
   cta: "Join the waitlist",
   screenshotAlt:
     "Tripwire moderation dashboard triaging flagged issues, pull requests, and comments across an organization",
-  /* Image is 1024×717. */
+  /*
+   * Image is 1024×716.5 in design units. The export's top row was fully
+   * transparent — the bright backdrop showed through it as a hairline — so that
+   * row is trimmed from the asset. Everything therefore sits 0.5px higher than
+   * the raw frame coordinates, and these percentages account for it:
+   *   top = (node.y − 0.5) / 716.5
+   */
   hotspots: [
     /* Topbar nav: Queue / Events / Rules / Workflows / Moderation (32px tall). */
-    { left: 10.547, top: 1.116, width: 8.398, height: 4.463 },
-    { left: 19.141, top: 1.116, width: 8.594, height: 4.463 },
-    { left: 27.93, top: 1.116, width: 7.91, height: 4.463 },
-    { left: 36.035, top: 1.116, width: 10.84, height: 4.463 },
-    { left: 47.07, top: 1.116, width: 11.23, height: 4.463 },
+    { left: 10.547, top: 1.047, width: 8.398, height: 4.466 },
+    { left: 19.141, top: 1.047, width: 8.594, height: 4.466 },
+    { left: 27.93, top: 1.047, width: 7.91, height: 4.466 },
+    { left: 36.035, top: 1.047, width: 10.84, height: 4.466 },
+    { left: 47.07, top: 1.047, width: 11.23, height: 4.466 },
 
     /* Reason filter chips: All reasons / Spam / Harassment / Off-topic / Automod / NSFW. */
-    { left: 7.422, top: 50.698, width: 8.105, height: 3.487, radius: 999 },
-    { left: 16.113, top: 50.558, width: 5.371, height: 3.766, radius: 999 },
-    { left: 22.07, top: 50.558, width: 8.789, height: 3.766, radius: 999 },
-    { left: 31.445, top: 50.558, width: 7.129, height: 3.766, radius: 999 },
-    { left: 39.16, top: 50.558, width: 7.227, height: 3.766, radius: 999 },
-    { left: 46.973, top: 50.558, width: 5.664, height: 3.766, radius: 999 },
+    { left: 7.422, top: 50.663, width: 8.105, height: 3.489, radius: 999 },
+    { left: 16.113, top: 50.523, width: 5.371, height: 3.768, radius: 999 },
+    { left: 22.07, top: 50.523, width: 8.789, height: 3.768, radius: 999 },
+    { left: 31.445, top: 50.523, width: 7.129, height: 3.768, radius: 999 },
+    { left: 39.16, top: 50.523, width: 7.227, height: 3.768, radius: 999 },
+    { left: 46.973, top: 50.523, width: 5.664, height: 3.768, radius: 999 },
 
     /* The six report rows in the moderation queue (896×56 each). */
-    { left: 6.25, top: 55.927, width: 87.5, height: 7.81, radius: 10 },
-    { left: 6.25, top: 63.738, width: 87.5, height: 7.81, radius: 10 },
-    { left: 6.25, top: 71.548, width: 87.5, height: 7.81, radius: 10 },
-    { left: 6.25, top: 79.359, width: 87.5, height: 7.81, radius: 10 },
-    { left: 6.25, top: 87.169, width: 87.5, height: 7.81, radius: 10 },
-    { left: 6.25, top: 94.98, width: 87.5, height: 7.81, radius: 10 },
+    { left: 6.25, top: 55.897, width: 87.5, height: 7.816, radius: 10 },
+    { left: 6.25, top: 63.712, width: 87.5, height: 7.816, radius: 10 },
+    { left: 6.25, top: 71.528, width: 87.5, height: 7.816, radius: 10 },
+    { left: 6.25, top: 79.344, width: 87.5, height: 7.816, radius: 10 },
+    { left: 6.25, top: 87.16, width: 87.5, height: 7.816, radius: 10 },
+    { left: 6.25, top: 94.976, width: 87.5, height: 7.816, radius: 10 },
   ] satisfies Hotspot[],
 };
 

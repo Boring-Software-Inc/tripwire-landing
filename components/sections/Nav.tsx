@@ -21,9 +21,19 @@ export default function Nav() {
         scrolled ? "bg-background/80 backdrop-blur-md" : "bg-background"
       }`}
     >
-      <div className="mx-auto w-full max-w-[1536px] px-8">
-        <div className="grid h-16 grid-cols-[auto_1fr_auto] items-center gap-8">
-          <a href="#hero" className="flex items-center gap-2.5 text-foreground">
+      <div className="mx-auto w-full max-w-[1536px] px-8 sm:px-12 lg:px-20">
+        {/*
+         * 1fr auto 1fr, not auto 1fr auto: with equal-weight side columns the
+         * centre column lands on the true centre of the bar. Sizing the sides
+         * to their content (auto) centred the nav within its column instead,
+         * which reads as left-leaning because the logo is much narrower than
+         * the buttons opposite it.
+         */}
+        <div className="grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-8">
+          <a
+            href="#hero"
+            className="flex w-fit items-center gap-2.5 text-foreground"
+          >
             <Logo width={20} height={14} />
             <span className="text-[16px]/[1.5] font-medium">{SITE.name}</span>
           </a>
@@ -53,13 +63,13 @@ export default function Nav() {
           <div className="col-start-3 flex items-center justify-end gap-3">
             <a
               href={NAV_ACCESS.href}
-              className="hidden rounded-full border border-line-strong bg-surface px-[10.5px] pt-[5.6px] pb-[5.88px] text-sm/[1.43] font-medium whitespace-nowrap text-foreground transition-opacity duration-150 hover:opacity-85 md:block"
+              className="hidden rounded-ui border border-line-strong bg-surface px-[10.5px] pt-[5.6px] pb-[5.88px] text-sm/[1.43] font-medium whitespace-nowrap text-foreground transition-opacity duration-150 hover:opacity-85 md:block"
             >
               {NAV_ACCESS.label}
             </a>
             <a
               href={NAV_CTA.href}
-              className="hidden rounded-full bg-foreground px-[10.5px] pt-[5.6px] pb-[5.88px] text-sm/[1.43] font-medium whitespace-nowrap text-background transition-opacity duration-150 hover:opacity-85 md:block"
+              className="hidden rounded-ui bg-foreground px-[10.5px] pt-[5.6px] pb-[5.88px] text-sm/[1.43] font-medium whitespace-nowrap text-background transition-opacity duration-150 hover:opacity-85 md:block"
             >
               {NAV_CTA.label}
             </a>
@@ -112,7 +122,7 @@ export default function Nav() {
             <a
               href={NAV_CTA.href}
               onClick={() => setMenuOpen(false)}
-              className="mt-3 rounded-full bg-foreground px-4 py-2.5 text-center text-sm font-medium text-background transition-opacity duration-150 hover:opacity-85"
+              className="mt-3 rounded-tight bg-foreground px-4 py-2.5 text-center text-sm font-medium text-background transition-opacity duration-150 hover:opacity-85"
             >
               {NAV_CTA.label}
             </a>
