@@ -27,6 +27,25 @@ type WaitlistMessage = {
   name?: string | null;
 };
 
+/**
+ * Structural check that a message came from the app domain — compares protocol
+ * + host ignoring a `www.` prefix, so an apex/www canonicalization on the app
+ * side can't silently break the listener (the symmetric bug to the app's opener
+ * allowlist that caused the dash-in-popup issue).
+ */
+function isAppOrigin(origin: string): boolean {
+  try {
+    const got = new URL(origin);
+    const app = new URL(REQUEST_ACCESS.appOrigin);
+    const stripWww = (host: string) => host.replace(/^www\./, "");
+    return (
+      got.protocol === app.protocol && stripWww(got.host) === stripWww(app.host)
+    );
+  } catch {
+    return false;
+  }
+}
+
 type Phase = "idle" | "waiting" | "success" | "incomplete";
 
 export default function RequestAccessCta({
@@ -65,8 +84,9 @@ export default function RequestAccessCta({
 
   useEffect(() => {
     function onMessage(event: MessageEvent) {
-      // Strict origin check — only the app domain may drive this UI.
-      if (event.origin !== REQUEST_ACCESS.appOrigin) return;
+      // Strict-but-structural origin check — only the app domain may drive this
+      // UI, matched by protocol+host (www-insensitive) so apex/www can't break it.
+      if (!isAppOrigin(event.origin)) return;
       const data = event.data as WaitlistMessage | null;
       if (!data || data.type !== MESSAGE_TYPE) return;
       if (phaseRef.current !== "waiting") return;
@@ -90,20 +110,24 @@ export default function RequestAccessCta({
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
 
-    const url = `${REQUEST_ACCESS.href}?opener=${encodeURIComponent(
+    const entryUrl = `${REQUEST_ACCESS.href}?opener=${encodeURIComponent(
       window.location.origin,
     )}`;
 
     // Must open synchronously inside the click handler or the popup is blocked.
+    // `mode=popup` tells the closer it's in a popup regardless of window.opener
+    // (which a future COOP header could sever) — opener is the delivery check
+    // only, never the popup detector.
     const popup = window.open(
-      url,
+      `${entryUrl}&mode=popup`,
       "tripwire-waitlist",
       "popup,width=520,height=680",
     );
 
-    // Blocked → degrade to a full-page redirect through the same entry point.
+    // Blocked → full-page redirect WITHOUT mode=popup, so the closer treats it
+    // as a full-page flow and navigates in place (not a stranded popup).
     if (!popup) {
-      window.location.href = url;
+      window.location.href = entryUrl;
       return;
     }
 
