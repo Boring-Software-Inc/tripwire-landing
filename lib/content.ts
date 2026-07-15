@@ -26,14 +26,14 @@ export const NAV_ACCESS = {
   label: "Already have access?",
   href: "https://app.tripwire.sh",
 };
-export const NAV_CTA = { label: "Waitlist", href: "#cta" };
+export const NAV_CTA = { label: "Request access", href: "#cta" };
 
 export const HERO = {
   badge: "Closed beta",
   headline: "The firewall for your OSS projects",
   subhead:
     "Trigger workflows from contributor activity. Keep the good, reject the bad.",
-  cta: "Join the waitlist",
+  cta: "Request access",
   screenshotAlt:
     "Tripwire moderation dashboard triaging flagged issues, pull requests, and comments across an organization",
   /*
@@ -217,7 +217,7 @@ export const CTA_BAND = {
   headline: "Block noise. Pass signal.",
   subhead:
     "Install the GitHub App. Workflows evaluate every change request. Runs are public; deciding stays gated.",
-  cta: "Join Waitlist",
+  cta: "Request access",
 };
 
 /*
@@ -291,9 +291,29 @@ export const FOOTER_BOTTOM = {
   ],
 } as const;
 
-export const WAITLIST = {
-  placeholder: "you@example.com",
-  submit: "Join",
-  success: "You're on the list",
-  genericError: "Something went wrong. Please try again.",
+/*
+ * The waitlist flow runs entirely on the app domain — GitHub sign-in happens
+ * there and this site makes no API calls, it only opens the app in a popup and
+ * listens for a postMessage back (see RequestAccessCta).
+ *
+ * `NEXT_PUBLIC_APP_URL` drives the app origin so the popup target and the
+ * message listener's origin check agree. It's build-time inlined (public), and
+ * falls back to the dev/prod origins so nothing breaks without an env file.
+ * The app must run on this origin; in dev that means the landing runs on a
+ * different port (e.g. `next dev -p 3001`).
+ */
+const APP_ORIGIN =
+  process.env.NEXT_PUBLIC_APP_URL ??
+  (process.env.NODE_ENV === "development"
+    ? "http://localhost:3000"
+    : "https://app.tripwire.sh");
+
+export const REQUEST_ACCESS = {
+  /** App origin — used for the popup target and the strict message-origin check. */
+  appOrigin: APP_ORIGIN,
+  /**
+   * Popup entry point. Also the `<a href>` / no-JS + popup-blocked fallback:
+   * navigating here full-page runs the same flow and lands on /queue in place.
+   */
+  href: `${APP_ORIGIN}/oauth/waitlist`,
 };

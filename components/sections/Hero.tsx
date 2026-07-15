@@ -2,7 +2,7 @@ import Image from "next/image";
 import heroBackdrop from "@/public/visuals/hero-backdrop.webp";
 import { HERO } from "@/lib/content";
 import Reveal from "@/components/Reveal";
-import WaitlistCta from "@/components/WaitlistCta";
+import RequestAccessCta from "@/components/RequestAccessCta";
 import HeroDemo from "@/components/HeroDemo";
 
 export default function Hero() {
@@ -30,7 +30,7 @@ export default function Hero() {
           <p className="mb-8 max-w-2xl text-lg/[1.56] text-muted">
             {HERO.subhead}
           </p>
-          <WaitlistCta label={HERO.cta} size="md" />
+          <RequestAccessCta label={HERO.cta} size="md" />
         </Reveal>
         <Reveal delay={100}>
           {/*
