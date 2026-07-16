@@ -58,6 +58,7 @@ export default function FeatureSection({
               height={image.height}
               sizes="(max-width: 768px) 100vw, 576px"
               hotspots={image.hotspots}
+              avatars={image.avatars}
             />
           </Reveal>
         </div>

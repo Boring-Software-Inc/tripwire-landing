@@ -88,6 +88,17 @@ export type Hotspot = {
   radius?: number;
 };
 
+/** A generative dither-kit avatar laid over a blank circle in a shot. */
+export type AvatarOverlay = {
+  /** Seed — the PR author's handle. Same handle → same avatar, forever. */
+  name: string;
+  /** Circle position, in % of the shot (same basis as Hotspot). */
+  left: number;
+  top: number;
+  /** Diameter as a % of the shot's WIDTH; kept circular via aspect-square. */
+  size: number;
+};
+
 export type Feature = {
   id: string;
   title: string;
@@ -102,6 +113,8 @@ export type Feature = {
     height: number;
     alt: string;
     hotspots?: Hotspot[];
+    /** Generative avatars overlaid on blank avatar circles in the shot. */
+    avatars?: AvatarOverlay[];
   };
 };
 
@@ -133,6 +146,13 @@ export const FEATURES: Feature[] = [
         { left: 3.299, top: 46.372, width: 93.403, height: 15.457 },
         { left: 3.299, top: 62.461, width: 93.403, height: 15.457 },
         { left: 3.299, top: 78.549, width: 93.403, height: 15.457 },
+      ],
+      /* Dither-kit avatars over the four blank circles, seeded by PR author. */
+      avatars: [
+        { name: "oyster-dev", left: 9.4, top: 34.83, size: 3.5 },
+        { name: "maria-k", left: 9.4, top: 50.92, size: 3.5 },
+        { name: "leo-nguyen", left: 9.4, top: 67.01, size: 3.5 },
+        { name: "dependabot", left: 9.4, top: 83.1, size: 3.5 },
       ],
     },
   },

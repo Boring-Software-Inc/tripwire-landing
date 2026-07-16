@@ -1,5 +1,6 @@
 import Image, { type StaticImageData } from "next/image";
-import type { Hotspot } from "@/lib/content";
+import type { AvatarOverlay, Hotspot } from "@/lib/content";
+import { DitherAvatar } from "@/components/dither-kit";
 
 /**
  * A product screenshot with hover hotspots laid over the elements that would be
@@ -22,6 +23,7 @@ export default function InteractiveShot({
   sizes,
   priority = false,
   hotspots = [],
+  avatars = [],
   className,
   imageClassName,
 }: {
@@ -32,6 +34,7 @@ export default function InteractiveShot({
   sizes?: string;
   priority?: boolean;
   hotspots?: Hotspot[];
+  avatars?: AvatarOverlay[];
   className?: string;
   imageClassName?: string;
 }) {
@@ -60,6 +63,29 @@ export default function InteractiveShot({
                 borderRadius: `${spot.radius ?? 8}px`,
               }}
             />
+          ))}
+        </div>
+      )}
+
+      {avatars.length > 0 && (
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          {avatars.map((a) => (
+            <div
+              key={a.name}
+              className="absolute overflow-hidden rounded-full"
+              style={{
+                left: `${a.left}%`,
+                top: `${a.top}%`,
+                width: `${a.size}%`,
+                aspectRatio: "1",
+              }}
+            >
+              <DitherAvatar
+                name={a.name}
+                animate={false}
+                className="h-full w-full"
+              />
+            </div>
           ))}
         </div>
       )}

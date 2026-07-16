@@ -453,6 +453,14 @@ export default function HeroDemo({
   }, []);
 
   useEffect(() => {
+    // On mobile, DON'T tie the demo to page scroll: the reveal drags the
+    // dashboard header up and out of the window as you scroll the page past the
+    // hero, cutting it off. Leave progress at its initial 0 (header parked at
+    // the top) and attach no scroll listener.
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+    if (isMobile) {
+      return;
+    }
     // Respect reduced-motion: skip the reveal and show the demo fully settled.
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
