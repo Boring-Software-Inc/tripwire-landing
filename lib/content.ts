@@ -100,6 +100,21 @@ export type AvatarOverlay = {
   size: number;
 };
 
+/*
+ * Social-proof strip under the hero. Logo artwork lives in
+ * components/sponsor-logos.tsx, keyed by `logo`.
+ */
+export const SPONSORS = {
+  heading: "Sponsored by",
+  items: [
+    {
+      name: "CodeRabbit",
+      logo: "coderabbit",
+      href: "https://coderabbit.ai?ref=tripwire.sh",
+    },
+  ],
+} as const;
+
 export type Feature = {
   id: string;
   title: string;
