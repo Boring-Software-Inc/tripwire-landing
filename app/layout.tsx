@@ -12,8 +12,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  // TODO: replace with the real production domain before launch
-  metadataBase: new URL("https://tripwire.example.com"),
+  metadataBase: new URL("https://tripwire.sh"),
   title: SITE.title,
   description: SITE.description,
   openGraph: {
