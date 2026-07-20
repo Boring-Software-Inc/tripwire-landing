@@ -25,7 +25,7 @@ export const NAV_LINKS = [
 export const NAV_ACCESS = {
   label: "Already have access?",
   // The new app. Overridden by NEXT_PUBLIC_APP_URL at build time (see APP_ORIGIN).
-  href: "https://v2.tripwire.sh",
+  href: "https://app.tripwire.sh",
 };
 export const NAV_CTA = { label: "Request access", href: "#cta" };
 
@@ -342,7 +342,7 @@ const APP_ORIGIN =
   process.env.NEXT_PUBLIC_APP_URL ??
   (process.env.NODE_ENV === "development"
     ? "http://localhost:3000"
-    : "https://v2.tripwire.sh");
+    : "https://app.tripwire.sh");
 
 export const REQUEST_ACCESS = {
   /** App origin — used for the popup target and the strict message-origin check. */
