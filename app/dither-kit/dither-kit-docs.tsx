@@ -20,6 +20,7 @@ import {
   KnobsSection,
   type ReplayKey,
   type Replays,
+  TestimonialsSection,
 } from "@/components/dither-kit-docs/sections";
 import { DitherStrip, usePageTheme } from "@/components/dither-kit-docs/ui";
 
@@ -117,6 +118,7 @@ export default function DitherKitDocs() {
           replayToken={replays.hero}
           onReplay={() => replay("hero")}
         />
+        <TestimonialsSection />
         <InstallSection pm={pm} onPmChange={setPm} />
         <ChartGallery
           pm={pm}

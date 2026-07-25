@@ -1,7 +1,14 @@
 "use client"
 
-import { MoonIcon, SparklesIcon, SunIcon } from "lucide-react"
-import { useState } from "react"
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  MoonIcon,
+  SparklesIcon,
+  SunIcon,
+} from "lucide-react"
+import Image from "next/image"
+import { useRef, useState } from "react"
 import {
   ActiveDot,
   Area,
@@ -26,6 +33,12 @@ import {
   XAxis,
   YAxis,
 } from "@/components/dither-kit"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  useCarousel,
+} from "@/components/ui/carousel"
 import {
   addCmd,
   areaCode,
@@ -53,6 +66,7 @@ import {
   SPARKLINE_CODE,
   type Tweaks,
 } from "./content"
+import { type Testimonial, TESTIMONIALS } from "./testemonials"
 import {
   Code,
   CodeBlock,
@@ -166,6 +180,213 @@ export function HeroSection({
         </div>
       </div>
     </header>
+  )
+}
+
+/** The X wordmark, sized to sit on a text baseline. */
+function XIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 5 14 14"
+      aria-hidden
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fill="currentColor"
+        d="M12.683 17.688l-4.413-6.522 4.116-4.853h-1.432l-3.32 3.915-2.648-3.915H1.376l4.253 6.286L1.312 17.688h1.433l3.521-4.152 2.81 4.152h3.611-0.004zM4.514 7.227L10.972 16.773h-1.428L3.085 7.227h1.428z"
+      />
+    </svg>
+  )
+}
+
+/** One post, as a card: handle on the frame, media and caption on the panel
+ * inside it. The whole card is the link back to the original post.
+ *
+ * Video posts hold the poster still until pointer/focus, then play muted and
+ * looping — `preload="none"` keeps the clips off the initial page load, so the
+ * rail costs only its posters until someone actually reaches for one. */
+function TestimonialCard({
+  tweet,
+  author,
+  caption,
+  image,
+  avatar,
+  video,
+}: Testimonial) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  const play = () => {
+    const el = videoRef.current
+    // Autoplay can still be refused (data saver, backgrounded tab); the poster
+    // stays up in that case, so there's nothing to recover from.
+    el?.play().catch(() => {})
+  }
+  const stop = () => {
+    const el = videoRef.current
+    if (!el) return
+    el.pause()
+    el.currentTime = 0
+  }
+
+  return (
+    <a
+      href={tweet}
+      target="_blank"
+      rel="noreferrer"
+      onMouseEnter={play}
+      onMouseLeave={stop}
+      onFocus={play}
+      onBlur={stop}
+      className="group flex w-[250px] flex-col rounded-lg border bg-card px-1 pb-1 transition-colors hover:border-foreground/25"
+    >
+      <div className="flex items-center gap-2 p-2">
+        {avatar ? (
+          // Author avatars live alongside the media in `public/testimonials/`,
+          // already cropped square — 2x source keeps them crisp at 20px.
+          <Image
+            src={avatar}
+            alt=""
+            width={40}
+            height={40}
+            className="size-5 shrink-0 rounded-full object-cover"
+          />
+        ) : (
+          // No avatar on file — seed dither-kit's own generative one from the
+          // handle, which is both on-brand and stable per author.
+          <DitherAvatar
+            name={author}
+            className="size-5 shrink-0 rounded-full"
+            animate={false}
+          />
+        )}
+        <span className="truncate font-mono text-xs text-foreground">
+          {author}
+        </span>
+        <XIcon className="ml-auto size-3.5 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" />
+      </div>
+
+      {/* The design's nested panel, in the page's own tokens: `card` frame over
+          a `background` well, rather than the one-off greys it was mocked in. */}
+      <div className="flex flex-1 flex-col overflow-hidden rounded-md bg-background">
+        {/* The media box's proportions from the design (242×170). */}
+        <div className="relative aspect-[242/170] w-full">
+          {/* Absolute, so a poster taller than the box's ratio crops instead of
+              stretching it — `h-full` on an in-flow child of an aspect-ratio
+              parent resolves to `auto` and the image's own height wins. */}
+          <Image
+            src={image}
+            alt={`Post by @${author}`}
+            width={640}
+            height={450}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          {video ? (
+            <>
+              <video
+                ref={videoRef}
+                src={video}
+                poster={image}
+                muted
+                loop
+                playsInline
+                preload="none"
+                aria-hidden
+                tabIndex={-1}
+                className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity group-hover:opacity-100 group-focus:opacity-100"
+              />
+              {/* Tells you there's a clip here before you hover it. */}
+              <span
+                aria-hidden
+                className="absolute right-1.5 bottom-1.5 rounded-sm bg-background/70 px-1.5 py-0.5 font-mono text-[10px] text-foreground backdrop-blur-sm transition-opacity group-hover:opacity-0"
+              >
+                ▶
+              </span>
+            </>
+          ) : null}
+        </div>
+        {/* Captions vary a lot in length and every card in the rail has to be
+            the same height, so the box is fixed and the text clamps to two
+            lines. The height lives on the wrapper and the clamp on the text —
+            padding on the clamped element itself would push the cut-off past
+            the second line and leak a sliver of the third. */}
+        <div className="h-11 px-2 pt-1 pb-2">
+          <p className="line-clamp-2 font-mono text-xs leading-4 text-muted-foreground transition-colors group-hover:text-foreground">
+            {caption}
+          </p>
+        </div>
+      </div>
+    </a>
+  )
+}
+
+/** The rail's arrows. Lives inside <Carousel> so it can read embla's state —
+ * styled to match the page's other icon buttons rather than shadcn's default
+ * round outline pair. */
+function RailNav() {
+  const { scrollPrev, scrollNext, canScrollPrev, canScrollNext } = useCarousel()
+  const cls =
+    "rounded-md border p-1.5 text-muted-foreground transition-colors hover:border-foreground/25 hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
+  return (
+    <div className="flex items-center gap-1.5">
+      <button
+        type="button"
+        onClick={scrollPrev}
+        disabled={!canScrollPrev}
+        aria-label="Previous posts"
+        className={cls}
+      >
+        <ChevronLeftIcon className="size-3.5" />
+      </button>
+      <button
+        type="button"
+        onClick={scrollNext}
+        disabled={!canScrollNext}
+        aria-label="More posts"
+        className={cls}
+      >
+        <ChevronRightIcon className="size-3.5" />
+      </button>
+    </div>
+  )
+}
+
+export function TestimonialsSection() {
+  if (TESTIMONIALS.length === 0) return null
+
+  return (
+    <section>
+      <Carousel
+        opts={{ align: "start", slidesToScroll: 2 }}
+        className="flex flex-col gap-5"
+      >
+        <div className="flex items-center gap-3">
+          <h2 className="font-pixel-geist text-lg text-foreground">
+            in the wild
+          </h2>
+          <DitherStrip className="h-1.5 flex-1" />
+          <RailNav />
+        </div>
+
+        {/*
+         * The viewport bleeds into the page gutter (`-mx-6 px-6`, cancelling
+         * the container's padding) so cards drag off the edge instead of
+         * stopping short of it, and fades at both ends to sell that there's
+         * more. Embla swallows the click that ends a drag, so the cards being
+         * links doesn't fight the grab.
+         */}
+        <CarouselContent
+          viewportClassName="-mx-6 cursor-grab px-6 active:cursor-grabbing [mask-image:linear-gradient(to_right,transparent,black_24px,black_calc(100%_-_24px),transparent)]"
+          className="ml-0 items-start gap-4 pb-2"
+        >
+          {TESTIMONIALS.map((t) => (
+            <CarouselItem key={t.tweet} className="basis-auto pl-0">
+              <TestimonialCard {...t} />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
+    </section>
   )
 }
 
