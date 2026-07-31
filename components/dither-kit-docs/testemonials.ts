@@ -28,6 +28,16 @@ export type Testimonial = {
 
 export const TESTIMONIALS: Testimonial[] = [
   {
+    tweet: "https://x.com/lewiscarhart/status/2083325959889928212",
+    author: "lewiscarhart",
+    // Post opens on the $80k HubSpot quote that prompted the build — trimmed
+    // past it to the line that's the testimonial.
+    caption: "charts beautified with dither-kit (@grimcodes)",
+    image: "/testimonials/lewiscarhart-post.webp",
+    avatar: "/testimonials/lewiscarhart-avatar.webp",
+    video: "/testimonials/lewiscarhart-post.mp4",
+  },
+  {
     tweet: "https://x.com/marclou/status/2080998264476938266",
     author: "marclou",
     caption:
