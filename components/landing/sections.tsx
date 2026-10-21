@@ -7,7 +7,9 @@ import { AsciiFire } from "@/components/landing/ascii-fire";
 import { Ghost } from "@/components/landing/ghost";
 import { Row } from "@/components/landing/grid";
 import { Lockup } from "@/components/landing/logo";
-import { RULES, RuleCard } from "@/components/landing/rule-card";
+import { RuleBuilder } from "@/components/landing/rule-builder";
+import { RuleCard } from "@/components/landing/rule-card";
+import { RULES } from "@/components/landing/rules-data";
 import { APP } from "@/lib/content";
 import { cn } from "@/lib/glaze/utils";
 
@@ -138,10 +140,6 @@ export function Outcomes() {
   );
 }
 
-function Slot({ children }: { children: string }) {
-  return <span className="slot h-[26px] text-text-3">{children}</span>;
-}
-
 export function Rules() {
   return (
     <Row aria-labelledby="rules-title">
@@ -153,26 +151,7 @@ export function Rules() {
           <p className="t-section-sub text-text-2">Write a rule the way you would say it.</p>
         </div>
         <div className="flex flex-col gap-3 px-5 pb-12 lg:min-w-0 lg:flex-1 lg:border-l lg:border-(--grid) lg:px-9 lg:py-[72px]">
-          <div role="img" aria-label="Create rule: Require that field condition value as a severity signal." className="card-hover rounded-shell bg-shell p-[3px]">
-            <div className="flex flex-col gap-3.5 rounded-panel bg-paper p-5">
-              <span className="text-[14px] leading-[21px] font-medium text-text-1">Create rule</span>
-              <p className="flex flex-wrap items-center gap-1.5 text-[18px] leading-7 text-text-2">
-                <span>Require</span>
-                <span>that</span>
-                <Slot>field</Slot>
-                <Slot>condition</Slot>
-                <Slot>value</Slot>
-                <span>as</span>
-                <span>a</span>
-                <span className="flex h-[30px] items-center rounded-[8px] bg-paper px-2 text-text-3 ring-1 ring-line-control">severity</span>
-                <span>signal.</span>
-              </p>
-            </div>
-          </div>
-          <div className="only-lg flex gap-3">
-            <RuleCard rule={RULES.crypto} hover className="min-w-0 flex-1" />
-            <RuleCard rule={RULES.age} hover className="min-w-0 flex-1" />
-          </div>
+          <RuleBuilder />
         </div>
       </div>
     </Row>

@@ -1,5 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import { Logo } from "@/components/landing/logo";
-import { RULES, RuleCard } from "@/components/landing/rule-card";
+import { RuleCard } from "@/components/landing/rule-card";
+import { RULES } from "@/components/landing/rules-data";
 import { cn } from "@/lib/glaze/utils";
 
 const TABS = ["Moderation", "Activity", "Rules", "Workflows", "Customize", "Analytics"];
@@ -27,8 +31,10 @@ function Segment({ label, count, on = false }: { label: string; count: number; o
 }
 
 export function AppWindow() {
+  const [off, setOff] = useState(0);
+  const count = (on: boolean) => setOff((n) => n + (on ? -1 : 1));
   return (
-    <div aria-hidden inert className="relative flex h-[620px] w-full rounded-t-[16px] bg-shell px-1 pt-1 select-none">
+    <div className="relative flex h-[620px] w-full rounded-t-[16px] bg-shell px-1 pt-1 select-none">
       <div className="flex grow flex-col overflow-clip rounded-t-[12px] bg-page text-[14px] leading-[18px]">
         <div className="flex h-[52px] shrink-0 items-center gap-5 border-b border-line-faint px-4">
           <div className="flex items-center gap-2.5">
@@ -79,7 +85,7 @@ export function AppWindow() {
           <div className="flex w-[768px] items-center justify-between">
             <span className="flex rounded-pill bg-paper p-0.5 ring-1 ring-line-faint">
               <Segment label="All" count={9} on />
-              <Segment label="Active" count={9} />
+              <Segment label="Active" count={9 - off} />
               <Segment label="Custom" count={0} />
             </span>
             <span className="flex h-[30px] items-center gap-2 rounded-pill bg-paper pr-2.5 pl-3 text-[13px] leading-[18px] text-text-1 ring-1 ring-line-control">
@@ -88,10 +94,10 @@ export function AppWindow() {
             </span>
           </div>
           <div className="flex w-[768px] flex-wrap gap-3">
-            <RuleCard rule={RULES.crypto} width={378} />
-            <RuleCard rule={RULES.age} width={378} />
-            <RuleCard rule={RULES.honeypot} width={378} />
-            <RuleCard rule={RULES.files} width={378} />
+            <RuleCard rule={RULES.crypto} width={378} onToggle={count} />
+            <RuleCard rule={RULES.age} width={378} onToggle={count} />
+            <RuleCard rule={RULES.honeypot} width={378} onToggle={count} />
+            <RuleCard rule={RULES.files} width={378} onToggle={count} />
           </div>
         </div>
       </div>

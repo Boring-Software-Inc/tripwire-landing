@@ -1,45 +1,8 @@
-import type { ReactNode } from "react";
+"use client";
+
+import { useState } from "react";
+import type { Rule } from "@/components/landing/rules-data";
 import { cn } from "@/lib/glaze/utils";
-
-export type Rule = {
-  title: string;
-  words: string[];
-  value?: ReactNode;
-  mono?: boolean;
-  matches: number;
-  spikes: number[];
-};
-
-export const RULES: Record<"crypto" | "age" | "honeypot" | "files", Rule> = {
-  crypto: {
-    title: "Crypto address",
-    words: ["Catches", "cryptocurrency", "addresses", "in", "titles,", "comments", "and", "diffs."],
-    matches: 2,
-    spikes: [9.3, 17.3],
-  },
-  age: {
-    title: "Account age",
-    words: ["Flags", "change", "requests", "from", "accounts", "younger", "than"],
-    value: "7 days",
-    matches: 0,
-    spikes: [],
-  },
-  honeypot: {
-    title: "Honeypot paths",
-    words: ["Catches", "change", "requests", "that", "touch"],
-    value: ".github/workflows/**",
-    mono: true,
-    matches: 0,
-    spikes: [],
-  },
-  files: {
-    title: "Max files changed",
-    words: ["Flags", "change", "requests", "that", "touch", "more", "than"],
-    value: "200 files",
-    matches: 1,
-    spikes: [9.3],
-  },
-};
 
 function sparkPoints(spikes: number[]) {
   const pts = ["0,15"];
@@ -51,14 +14,24 @@ function sparkPoints(spikes: number[]) {
   return pts.join(" ");
 }
 
-function Switch() {
+function Switch({ on, name, onFlip }: { on: boolean; name: string; onFlip: () => void }) {
   return (
-    <span
-      className="flex h-[18px] w-8 shrink-0 items-center justify-end rounded-pill p-0.5"
-      style={{ backgroundImage: "linear-gradient(in oklab 180deg, var(--glaze-sm-top) 0%, var(--glaze-sm-mid) 50%, var(--glaze-sm-bottom) 100%)" }}
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      aria-label={name}
+      onClick={onFlip}
+      className="flex h-[18px] w-8 shrink-0 items-center rounded-pill p-0.5 focus-visible:outline-offset-1"
+      style={{
+        justifyContent: on ? "flex-end" : "flex-start",
+        backgroundImage: on
+          ? "linear-gradient(in oklab 180deg, var(--glaze-sm-top) 0%, var(--glaze-sm-mid) 50%, var(--glaze-sm-bottom) 100%)"
+          : "linear-gradient(var(--switch-off), var(--switch-off))",
+      }}
     >
-      <span className="size-3.5 rounded-pill bg-paper" />
-    </span>
+      <span className="size-3.5 rounded-pill" style={{ backgroundColor: on ? "var(--paper)" : "var(--switch-knob)" }} />
+    </button>
   );
 }
 
@@ -68,24 +41,32 @@ export function RuleCard({
   compact = false,
   hover = false,
   className,
+  onToggle,
 }: {
   rule: Rule;
   width?: number;
   compact?: boolean;
   hover?: boolean;
   className?: string;
+  onToggle?: (on: boolean) => void;
 }) {
+  const [on, setOn] = useState(true);
+  const flip = () => {
+    setOn(!on);
+    onToggle?.(!on);
+  };
   const meta = compact ? "text-[13px] leading-[18px]" : "text-[12px] leading-4";
   return (
     <div
-      className={cn("flex shrink-0 flex-col rounded-shell bg-shell p-[3px]", !compact && "h-36", hover && "card-hover", className)}
+      className={cn("rule-card flex shrink-0 flex-col rounded-shell bg-shell p-[3px]", !compact && "h-36", hover && "card-hover", className)}
+      data-queued={on ? undefined : ""}
       style={{ width }}
     >
       <div className="flex grow flex-col gap-1.5 rounded-panel bg-paper px-[13px] py-[11px]">
         <div className="flex h-[21px] shrink-0 items-center gap-2">
           <span className="line-clamp-1 text-[14px] leading-[21px] font-medium text-text-1">{rule.title}</span>
           <span className="grow" />
-          <Switch />
+          <Switch on={on} name={rule.title} onFlip={flip} />
         </div>
         <p className="flex h-[39px] shrink-0 flex-wrap gap-x-[3.5px] overflow-clip text-[13px] leading-[19.5px] text-text-2">
           {rule.words.map((w, i) => (
@@ -112,10 +93,10 @@ export function RuleCard({
             <circle cx="7" cy="7" r="5.25" fill="none" stroke="currentColor" strokeWidth="1.3" />
             <path d="M3.3 10.7L10.7 3.3" stroke="currentColor" strokeWidth="1.3" />
           </svg>
-          <span className={cn(meta, "font-medium text-text-2")}>Blocks</span>
+          <span className={cn(meta, "font-medium text-text-2")}>{rule.label ?? "Blocks"}</span>
         </span>
         <span className="flex min-w-0 items-center gap-2">
-          <svg aria-hidden width="64" height="16" viewBox="0 0 64 16" preserveAspectRatio="none" className="min-w-0 shrink">
+          <svg aria-hidden width="64" height="16" viewBox="0 0 64 16" preserveAspectRatio="none" className={cn("min-w-0 shrink", !on && "hidden")}>
             {rule.matches ? (
               <polyline
                 points={sparkPoints(rule.spikes)}
@@ -129,7 +110,9 @@ export function RuleCard({
               <path d="M0 15H64" stroke="var(--ink-10)" strokeWidth="1.2" strokeDasharray="2 3" />
             )}
           </svg>
-          {rule.matches ? (
+          {!on ? (
+            <span className={cn(meta, "whitespace-nowrap text-text-2")}>Off</span>
+          ) : rule.matches ? (
             <span className="flex items-baseline gap-1">
               <span className="text-[13px] leading-[19.5px] font-medium text-text-1">{rule.matches}</span>
               <span className={cn(meta, "whitespace-nowrap text-text-2")}>{rule.matches === 1 ? "match, last 24 h" : "matches, last 24 h"}</span>

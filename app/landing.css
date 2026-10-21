@@ -292,3 +292,48 @@
     display: none !important;
   }
 }
+
+.lander .rule-card {
+  transition:
+    translate var(--dur-state) var(--ease-out),
+    background-color var(--dur-state) var(--ease-out);
+}
+
+.lander .rule-card[data-queued] {
+  translate: 0 -2px;
+  background-color: var(--shell-hover);
+}
+
+.lander .rule-enter {
+  animation: lander-enter var(--dur-overlay) var(--ease-out);
+}
+
+@keyframes lander-enter {
+  from {
+    opacity: 0;
+    translate: 0 4px;
+  }
+}
+
+.lander .value-slot {
+  field-sizing: content;
+  min-width: 3ch;
+  height: 26px;
+  border-bottom: var(--line-width) dotted var(--ink-45);
+  color: var(--text-1);
+  outline-offset: 2px;
+}
+
+.lander .value-slot::placeholder {
+  color: var(--text-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lander .rule-card[data-queued] {
+    translate: none;
+  }
+
+  .lander .rule-enter {
+    animation: none;
+  }
+}
