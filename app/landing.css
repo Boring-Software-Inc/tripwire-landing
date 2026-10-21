@@ -270,10 +270,14 @@
 
   .lander .fire-l {
     right: calc(100% + 2px);
+    mask-image: linear-gradient(to top, #000 45%, transparent), linear-gradient(to left, #000 55%, transparent);
+    mask-composite: intersect;
   }
 
   .lander .fire-r {
     left: calc(100% + 2px);
+    mask-image: linear-gradient(to top, #000 45%, transparent), linear-gradient(to right, #000 55%, transparent);
+    mask-composite: intersect;
   }
 }
 

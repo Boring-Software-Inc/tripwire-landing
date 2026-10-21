@@ -70,7 +70,7 @@ export function RuleCard({
   className,
 }: {
   rule: Rule;
-  width: number | string;
+  width?: number;
   compact?: boolean;
   hover?: boolean;
   className?: string;
@@ -106,7 +106,7 @@ export function RuleCard({
           ) : null}
         </p>
       </div>
-      <div className="flex items-center justify-between px-[13px] pt-2 pb-1.5">
+      <div className="flex items-center justify-between gap-2 px-[13px] pt-2 pb-1.5">
         <span className="flex items-center gap-1.5">
           <svg aria-hidden width="14" height="14" viewBox="0 0 14 14" className="shrink-0 text-text-2">
             <circle cx="7" cy="7" r="5.25" fill="none" stroke="currentColor" strokeWidth="1.3" />
@@ -114,8 +114,8 @@ export function RuleCard({
           </svg>
           <span className={cn(meta, "font-medium text-text-2")}>Blocks</span>
         </span>
-        <span className="flex items-center gap-2">
-          <svg aria-hidden width="64" height="16" viewBox="0 0 64 16" className="shrink-0">
+        <span className="flex min-w-0 items-center gap-2">
+          <svg aria-hidden width="64" height="16" viewBox="0 0 64 16" preserveAspectRatio="none" className="min-w-0 shrink">
             {rule.matches ? (
               <polyline
                 points={sparkPoints(rule.spikes)}
@@ -132,10 +132,10 @@ export function RuleCard({
           {rule.matches ? (
             <span className="flex items-baseline gap-1">
               <span className="text-[13px] leading-[19.5px] font-medium text-text-1">{rule.matches}</span>
-              <span className={cn(meta, "text-text-2")}>{rule.matches === 1 ? "match, last 24 h" : "matches, last 24 h"}</span>
+              <span className={cn(meta, "whitespace-nowrap text-text-2")}>{rule.matches === 1 ? "match, last 24 h" : "matches, last 24 h"}</span>
             </span>
           ) : (
-            <span className={cn(meta, "text-text-2")}>No matches, last 24 h</span>
+            <span className={cn(meta, "whitespace-nowrap text-text-2")}>No matches, last 24 h</span>
           )}
         </span>
       </div>

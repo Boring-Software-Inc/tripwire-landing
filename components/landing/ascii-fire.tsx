@@ -9,8 +9,9 @@ const COLS = 40;
 const CW = 3.9;
 const CH = 7;
 const WIDTH = 156;
-const STEP_MS = 72;
+const STEP_MS = 75;
 const BANDS = [0.16, 0.32, 0.55, 0.8];
+const REACH = 1.35;
 
 function bandOf(h: number) {
   const f = h / MAXH;
@@ -27,8 +28,8 @@ export function AsciiFire({ side, height, seed }: { side: "l" | "r"; height: num
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
     const rows = Math.floor(height / CH);
-    const heat = new Float32Array(COLS * rows);
-    const source = new Float32Array(COLS);
+    const heat = new Uint8Array(COLS * rows);
+    const source = new Uint8Array(COLS);
     const decay = new Float32Array(COLS);
     const colors: string[] = ["", "", "", "", ""];
     let s = seed >>> 0 || 1;
@@ -39,70 +40,64 @@ export function AsciiFire({ side, height, seed }: { side: "l" | "r"; height: num
       return (s >>> 0) / 4294967296;
     };
 
-    const BAND = 0.18;
-    const bandRows = Math.round(rows * BAND);
-    const count = 4 + Math.floor(rand() * 3);
+    const count = 4 + Math.floor(rand() * 2);
+    const homes = new Float32Array(count);
     const centers = new Float32Array(count);
-    const widths = new Uint8Array(count);
-    const reaches = new Float32Array(count);
-    const drifts = new Int8Array(count);
-    const clocks = new Uint16Array(count);
-    const phase = rand() * Math.PI * 2;
+    const sigmas = new Float32Array(count);
+    const chimneyDecay = new Float32Array(count);
+    const between = MAXH / (0.17 * rows);
+    const spacing = COLS / count;
     for (let i = 0; i < count; i++) {
-      centers[i] = 1 + i * Math.floor(COLS / count) + Math.floor(rand() * 3);
-      widths[i] = 2 + Math.floor(rand() * 3);
-      reaches[i] = 0.7 + rand() * 0.3;
-      drifts[i] = rand() < 0.5 ? -1 : 1;
-      clocks[i] = 20 + Math.floor(rand() * 40);
+      const w = 2.5 + rand() * 1.5;
+      homes[i] = centers[i] = w / 2 + i * spacing;
+      sigmas[i] = w / 2;
+      const reach = (1.05 - (0.6 * i) / Math.max(1, count - 1)) * (0.85 + rand() * 0.25) * REACH;
+      chimneyDecay[i] = MAXH / (reach * rows);
     }
-    const lowDecay = (MAXH * 0.4) / bandRows;
-    const highDecay = (MAXH * 0.55) / Math.max(3, rows * 0.1);
+    const phase0 = rand() * Math.PI * 2;
+    const phase1 = rand() * Math.PI * 2;
+    const tip = (u: number) => {
+      let r = rows - 1;
+      while (r > 0 && heat[(r - 1) * COLS + u] > 0) r--;
+      return r;
+    };
 
     let t = 0;
     const step = () => {
-      t += STEP_MS / 1000;
-      decay.fill(highDecay);
+      t++;
       for (let i = 0; i < count; i++) {
-        if (--clocks[i] === 0) {
-          clocks[i] = 25 + Math.floor(rand() * 40);
-          if (rand() < 0.3) drifts[i] = -drifts[i];
-          centers[i] = Math.min(COLS - 2, Math.max(1, centers[i] + drifts[i]));
-        }
-        const close = 1 - centers[i] / COLS;
-        const top = Math.min(0.72, 0.72 * reaches[i] * (0.45 + 0.55 * close));
-        const climb = Math.max(1, rows * (top - BAND));
-        const d = Math.max(0.08, (MAXH * 0.55) / climb - 0.25);
-        const half = widths[i] / 2;
-        for (let u = Math.ceil(centers[i] - half); u <= Math.floor(centers[i] + half); u++) {
-          if (u >= 0 && u < COLS) decay[u] = Math.min(decay[u], d);
-        }
+        centers[i] += (rand() * 2 - 1) * 0.12;
+        centers[i] += (homes[i] - centers[i]) * 0.08;
       }
       for (let u = 0; u < COLS; u++) {
-        const close = 1 - u / COLS;
-        const n = 0.5 + 0.25 * Math.sin(u * 0.45 + t * 0.8 + phase) + 0.25 * Math.sin(u * 0.17 - t * 0.5);
-        source[u] = MAXH * (0.75 + 0.25 * (0.5 * close + 0.5 * n));
+        let d = between;
+        for (let i = 0; i < count; i++) {
+          const z = (u - centers[i]) / sigmas[i];
+          const g = Math.exp(-z * z);
+          const c = between + (chimneyDecay[i] - between) * g;
+          if (c < d) d = c;
+        }
+        decay[u] = d;
+        const n = (Math.sin(0.35 * u + phase0 + 0.05 * t) + 0.6 * Math.sin(0.13 * u + phase1 - 0.035 * t)) / 1.6;
+        source[u] = Math.round(MAXH * Math.min(1, (0.75 + 0.25 * (0.5 + 0.5 * n)) * (0.88 + 0.12 * (1 - u / COLS))));
       }
       const base = (rows - 1) * COLS;
       for (let u = 0; u < COLS; u++) heat[base + u] = source[u];
       for (let r = 0; r < rows - 1; r++) {
-        const inBand = r >= rows - 1 - bandRows;
         for (let u = 0; u < COLS; u++) {
-          const below = heat[(r + 1) * COLS + u];
-          const lift = inBand ? (rows - 1 - r) / bandRows : 1;
-          let h = below - (inBand ? lowDecay * (0.3 + lift * 1.4) * (0.5 + rand()) + (lift > 0.6 ? decay[u] * 0.35 * rand() : 0) : decay[u] * (0.5 + rand()));
-          if (!inBand && h < MAXH / 2 && rand() < 0.25) h -= 1;
+          const d = decay[u];
+          const whole = Math.floor(d);
+          const h = heat[(r + 1) * COLS + u] - whole - (rand() < d - whole ? 1 : 0);
           const roll = rand();
-          const du = roll < 0.22 ? (rand() < 0.5 ? -1 : 1) : roll < 0.3 ? 1 : 0;
+          const du = roll < 0.07 ? (rand() < 0.5 ? -1 : 1) : roll < 0.11 ? 1 : 0;
           const to = Math.min(COLS - 1, Math.max(0, u + du));
           heat[r * COLS + to] = h > 0 ? h : 0;
         }
       }
-      if (rand() < 0.8) {
-        const u = Math.floor(rand() * COLS);
-        let top = rows - 1;
-        while (top > 0 && heat[(top - 1) * COLS + u] > 0) top--;
-        const r = top - 2 - Math.floor(rand() * 5);
-        if (r >= 0) heat[r * COLS + u] = 2 + rand() * 3;
+      if (rand() < 0.45) {
+        const u = Math.min(COLS - 1, Math.max(0, Math.round(centers[Math.floor(rand() * count)])));
+        const r = tip(u) - 2 - Math.floor(rand() * 6);
+        if (r >= 0) heat[r * COLS + u] = 2 + Math.floor(rand() * 4);
       }
     };
 

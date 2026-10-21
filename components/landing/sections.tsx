@@ -46,7 +46,7 @@ export function Hero() {
       edges={
         <>
           <AsciiFire side="l" height={448} seed={11} />
-          <AsciiFire side="r" height={448} seed={29} />
+          <AsciiFire side="r" height={448} seed={23} />
         </>
       }
     >
@@ -146,14 +146,14 @@ export function Rules() {
   return (
     <Row aria-labelledby="rules-title">
       <div className="flex flex-col lg:flex-row">
-        <div className="sticky-copy flex flex-col gap-2 px-5 pt-12 pb-6 lg:w-[420px] lg:shrink-0 lg:gap-3 lg:self-start lg:px-9 lg:py-[72px]">
+        <div className="sticky-copy flex flex-col gap-2 px-5 pt-12 pb-6 lg:w-[33%] lg:shrink-0 xl:w-[37.6%] lg:gap-3 lg:self-start lg:px-9 lg:py-[72px]">
           <h2 id="rules-title" className="t-section text-text-1">
             Rules you can read
           </h2>
           <p className="t-section-sub text-text-2">Write a rule the way you would say it.</p>
         </div>
-        <div className="flex flex-col gap-3 px-5 pb-12 lg:flex-1 lg:border-l lg:border-(--grid) lg:px-9 lg:py-[72px]">
-          <div className="card-hover rounded-shell bg-shell p-[3px]">
+        <div className="flex flex-col gap-3 px-5 pb-12 lg:min-w-0 lg:flex-1 lg:border-l lg:border-(--grid) lg:px-9 lg:py-[72px]">
+          <div role="img" aria-label="Create rule: Require that field condition value as a severity signal." className="card-hover rounded-shell bg-shell p-[3px]">
             <div className="flex flex-col gap-3.5 rounded-panel bg-paper p-5">
               <span className="text-[14px] leading-[21px] font-medium text-text-1">Create rule</span>
               <p className="flex flex-wrap items-center gap-1.5 text-[18px] leading-7 text-text-2">
@@ -170,8 +170,8 @@ export function Rules() {
             </div>
           </div>
           <div className="only-lg flex gap-3">
-            <RuleCard rule={RULES.crypto} width={307} hover />
-            <RuleCard rule={RULES.age} width={307} hover />
+            <RuleCard rule={RULES.crypto} hover className="min-w-0 flex-1" />
+            <RuleCard rule={RULES.age} hover className="min-w-0 flex-1" />
           </div>
         </div>
       </div>
@@ -248,8 +248,8 @@ export function ClosingCta() {
       aria-labelledby="cta-title"
       edges={
         <>
-          <AsciiFire side="l" height={252} seed={47} />
-          <AsciiFire side="r" height={252} seed={83} />
+          <AsciiFire side="l" height={252} seed={37} />
+          <AsciiFire side="r" height={252} seed={41} />
         </>
       }
     >
