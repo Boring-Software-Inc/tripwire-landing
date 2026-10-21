@@ -51,10 +51,10 @@ export function Hero() {
       }
     >
       <div className="flex flex-col items-center gap-4 px-5 pt-14 pb-8 text-center lg:gap-5 lg:px-16 lg:py-28">
-        <h1 id="hero-title" className="t-display text-balance text-text-1">
+        <h1 id="hero-title" className="t-display text-text-1">
           The firewall for your OSS projects
         </h1>
-        <p className="t-lede text-balance text-text-2">Trigger workflows from contributor activity. Filter out the noise.</p>
+        <p className="t-lede text-text-2">Trigger workflows from contributor activity. Filter out the noise.</p>
         <div className="flex gap-2 pt-2 lg:pt-5">
           <RequestAccessCta size="xl" />
           <SignInButton />
