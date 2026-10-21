@@ -54,10 +54,11 @@ export function AsciiFire({
     const ey = new Float32Array(embers);
     const age = new Float32Array(embers);
     const life = new Float32Array(embers);
+    const y0 = new Float32Array(embers);
     const speed = new Float32Array(embers);
     const eg = new Uint8Array(embers);
     const alive = new Uint8Array(embers);
-    let nextEmber = 2 + Math.random() * 3;
+    let nextEmber = 0.5 + Math.random();
     let s = 1;
     const reseed = (n: number) => {
       s = Math.imul(n | 0, 2654435761) >>> 0 || 1;
@@ -101,7 +102,7 @@ export function AsciiFire({
       for (let e = 0; e < embers; e++) alive[e] = 0;
     };
 
-    const theme = { hot: "#E8461C", body: "#F97316", spark: "#FBBF24", k: 1, font: "" };
+    const theme = { hot: "#E8461C", body: "#F97316", spark: "#FBBF24", k: 1, font: "", ember: "" };
     const readTheme = () => {
       const style = getComputedStyle(canvas);
       theme.hot = style.getPropertyValue("--fire-hot").trim() || theme.hot;
@@ -109,6 +110,7 @@ export function AsciiFire({
       theme.spark = style.getPropertyValue("--fire-spark").trim() || theme.spark;
       theme.k = Number.parseFloat(style.getPropertyValue("--fire-k")) || 1;
       theme.font = `500 6.5px ${style.fontFamily}`;
+      theme.ember = `600 9px ${style.fontFamily}`;
       ctx.font = theme.font;
     };
 
@@ -195,12 +197,15 @@ export function AsciiFire({
         }
       }
       ctx.fillStyle = theme.spark;
+      ctx.font = theme.ember;
       for (let e = 0; e < embers; e++) {
         if (!alive[e]) continue;
-        ctx.globalAlpha = theme.k * 0.65 * (1 - age[e] / life[e]) * (0.8 + 0.2 * Math.random());
+        const fall = Math.min(1, (ey[e] - y0[e]) / Math.max(1, height * 0.86 - y0[e]));
+        ctx.globalAlpha = theme.k * (1 - fall * fall) * (0.85 + 0.15 * Math.random());
         ctx.fillText(EMBER[eg[e]], xOf(ex[e]), ey[e]);
       }
       ctx.globalAlpha = 1;
+      ctx.font = theme.font;
     };
 
     const stepEmbers = (dt: number) => {
@@ -212,17 +217,17 @@ export function AsciiFire({
           for (let c = 1; c < W; c++) if (hs[c] > hs[top]) top = c;
           alive[e] = 1;
           age[e] = 0;
-          life[e] = 3 + Math.random() * 3;
-          speed[e] = 20 + Math.random() * 20;
-          ex[e] = Math.min(W - 1, Math.max(0, top + Math.round(Math.random() * 4 - 2)));
-          ey[e] = height - hs[top] * LH;
+          speed[e] = 24 + Math.random() * 16;
+          ex[e] = Math.min(W - 1, Math.max(0, top + Math.round(Math.random() * 2 - 1)));
+          ey[e] = y0[e] = height - hs[top] * LH;
+          life[e] = (height * 0.86 - ey[e]) / speed[e];
           eg[e] = Math.floor(Math.random() * EMBER.length);
-          nextEmber = 2 + Math.random() * 3;
+          nextEmber = 1 + Math.random() * 1.5;
           continue;
         }
         age[e] += dt;
         ey[e] += speed[e] * dt;
-        if (Math.random() < 0.15) ex[e] = Math.min(W - 1, Math.max(0, ex[e] + (Math.random() < 0.5 ? -1 : 1)));
+        if (Math.random() < 0.12) ex[e] = Math.min(W - 1, Math.max(0, ex[e] + (Math.random() < 0.5 ? -1 : 1)));
         if (age[e] >= life[e] || ey[e] > height * 0.88) alive[e] = 0;
       }
     };

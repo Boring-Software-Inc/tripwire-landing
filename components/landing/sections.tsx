@@ -54,8 +54,8 @@ export function Hero() {
       aria-labelledby="hero-title"
       edges={
         <>
-          <AsciiFire side="l" height={448} seed={4} peaks={PEAKS.heroL} embers={2} />
-          <AsciiFire side="r" height={448} seed={9} peaks={PEAKS.heroR} embers={2} />
+          <AsciiFire side="l" height={448} seed={4} peaks={PEAKS.heroL} embers={3} />
+          <AsciiFire side="r" height={448} seed={9} peaks={PEAKS.heroR} embers={3} />
         </>
       }
     >
@@ -70,7 +70,7 @@ export function Hero() {
         </div>
       </div>
       <div className="only-sm relative flex flex-col items-center px-5 pt-7 pb-12">
-        <Ghost size={39} className="absolute top-[3px] left-[calc(50%+44px)]" />
+        <Ghost size={39} className="absolute top-[-5px] left-[calc(50%+44px)]" />
         <RuleCard rule={RULES.crypto} width={318} compact className="relative" />
       </div>
     </Row>
@@ -80,7 +80,7 @@ export function Hero() {
 export function Product() {
   return (
     <Row className="only-lg">
-      <Ghost size={71} className="absolute top-[13px] left-[calc(50%+346px)]" />
+      <Ghost size={71} className="absolute top-2 left-[calc(50%+346px)]" />
       <div className="pointer-events-none relative h-[640px] overflow-clip pt-[72px] [&>*]:pointer-events-auto">
         <AppWindow />
       </div>
@@ -234,8 +234,8 @@ export function ClosingCta() {
       aria-labelledby="cta-title"
       edges={
         <>
-          <AsciiFire side="l" height={252} seed={21} peaks={PEAKS.ctaL} embers={1} />
-          <AsciiFire side="r" height={252} seed={25} peaks={PEAKS.ctaR} embers={1} />
+          <AsciiFire side="l" height={252} seed={21} peaks={PEAKS.ctaL} embers={3} />
+          <AsciiFire side="r" height={252} seed={25} peaks={PEAKS.ctaR} embers={3} />
         </>
       }
     >
@@ -256,8 +256,14 @@ export function ClosingCta() {
 export function Footer() {
   return (
     <Row as="footer">
-      <div className="flex px-5 pt-6 pb-10 lg:px-9 lg:pt-7 lg:pb-14">
+      <div className="flex flex-col gap-3 px-5 pt-6 pb-10 lg:flex-row lg:items-center lg:justify-between lg:px-9 lg:pt-7 lg:pb-14">
         <Lockup size={18} wordClass="text-[14px] leading-4 font-medium tracking-[-0.01em] text-text-1" />
+        <p className="type-caption text-text-2">
+          © 2026{" "}
+          <a href="https://boringsoftware.net" className="text-text-2 hover:text-text-1">
+            <span className="link-draw">Boring Software, Inc.</span>
+          </a>
+        </p>
       </div>
     </Row>
   );
