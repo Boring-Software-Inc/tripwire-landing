@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { REQUEST_ACCESS } from "@/lib/content";
+import { useSyncExternalStore } from "react";
+import { Arrow } from "@/components/landing/arrow";
+import { buttonVariants } from "@/components/glaze/ui/button-variants";
+import { APP, REQUEST_ACCESS } from "@/lib/content";
+import { cn } from "@/lib/glaze/utils";
 
 /**
  * Access CTA used by the hero and the CTA band. Opens the app's GitHub waitlist
@@ -46,135 +49,146 @@ function isAppOrigin(origin: string): boolean {
   }
 }
 
-type Phase = "idle" | "waiting" | "success" | "incomplete";
+type Phase = "idle" | "waiting" | "pending" | "approved" | "rejected" | "incomplete";
 
-export default function RequestAccessCta({
-  label,
-  size = "md",
-  align = "start",
-}: {
-  label: string;
-  /** md = hero (16px), sm = CTA band (14px) — paddings per the frame */
-  size?: "md" | "sm";
-  align?: "start" | "center";
-}) {
-  const buttonClasses =
-    size === "md"
-      ? "rounded-tight md:rounded-ui bg-foreground px-[10.5px] pt-[5.6px] pb-[5.88px] text-[16px]/[1.5] font-medium text-background"
-      : "rounded-tight md:rounded-ui bg-foreground px-[17.5px] pt-[7px] pb-[7.28px] text-sm/[1.43] font-medium text-background";
+const RESULT: Record<WaitlistMessage["status"], Phase> = {
+  pending: "pending",
+  approved: "approved",
+  rejected: "rejected",
+  error: "incomplete",
+};
 
-  const justify = align === "center" ? "justify-center" : "justify-start";
+let phase: Phase = "idle";
+let popup: Window | null = null;
+let poll: number | null = null;
+const listeners = new Set<() => void>();
 
-  const [phase, setPhase] = useState<Phase>("idle");
-  const phaseRef = useRef<Phase>("idle");
-  const popupRef = useRef<Window | null>(null);
-  const pollRef = useRef<number | null>(null);
+function setPhase(next: Phase) {
+  phase = next;
+  listeners.forEach((fn) => fn());
+}
 
-  const setPhaseBoth = (next: Phase) => {
-    phaseRef.current = next;
-    setPhase(next);
-  };
+function stopPolling() {
+  if (poll !== null) {
+    window.clearInterval(poll);
+    poll = null;
+  }
+}
 
-  const stopPolling = () => {
-    if (pollRef.current !== null) {
-      window.clearInterval(pollRef.current);
-      pollRef.current = null;
-    }
-  };
+function onMessage(event: MessageEvent) {
+  // Strict-but-structural origin check — only the app domain may drive this
+  // UI, matched by protocol+host (www-insensitive) so apex/www can't break it.
+  if (!isAppOrigin(event.origin)) return;
+  const data = event.data as WaitlistMessage | null;
+  if (!data || data.type !== MESSAGE_TYPE) return;
+  if (phase !== "waiting") return;
+  const next = RESULT[data.status];
+  if (!next) return;
 
-  useEffect(() => {
-    function onMessage(event: MessageEvent) {
-      // Strict-but-structural origin check — only the app domain may drive this
-      // UI, matched by protocol+host (www-insensitive) so apex/www can't break it.
-      if (!isAppOrigin(event.origin)) return;
-      const data = event.data as WaitlistMessage | null;
-      if (!data || data.type !== MESSAGE_TYPE) return;
-      if (phaseRef.current !== "waiting") return;
+  stopPolling();
+  // Leave the popup open — the app's callback page shows a confirmation and
+  // lets the user close it themselves. We just reflect the result here.
+  popup = null;
+  setPhase(next);
+}
 
-      stopPolling();
-      // Leave the popup open — the app's callback page shows a confirmation and
-      // lets the user close it themselves. We just reflect the result here.
-      popupRef.current = null;
-      setPhaseBoth(data.status === "error" ? "incomplete" : "success");
-    }
-
-    window.addEventListener("message", onMessage);
-    return () => {
+function subscribe(fn: () => void) {
+  if (listeners.size === 0) window.addEventListener("message", onMessage);
+  listeners.add(fn);
+  return () => {
+    listeners.delete(fn);
+    if (listeners.size === 0) {
       window.removeEventListener("message", onMessage);
       stopPolling();
-    };
-  }, []);
-
-  function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
-    // Let modified clicks (new tab, etc.) and no-JS fall back to the plain href.
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-    e.preventDefault();
-
-    const entryUrl = `${REQUEST_ACCESS.href}?opener=${encodeURIComponent(
-      window.location.origin,
-    )}`;
-
-    // Must open synchronously inside the click handler or the popup is blocked.
-    // `mode=popup` tells the closer it's in a popup regardless of window.opener
-    // (which a future COOP header could sever) — opener is the delivery check
-    // only, never the popup detector.
-    const popup = window.open(
-      `${entryUrl}&mode=popup`,
-      "tripwire-waitlist",
-      "popup,width=520,height=680",
-    );
-
-    // Blocked → full-page redirect WITHOUT mode=popup, so the closer treats it
-    // as a full-page flow and navigates in place (not a stranded popup).
-    if (!popup) {
-      window.location.href = entryUrl;
-      return;
     }
+  };
+}
 
-    popupRef.current = popup;
-    setPhaseBoth("waiting");
+function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
+  // Let modified clicks (new tab, etc.) and no-JS fall back to the plain href.
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  e.preventDefault();
 
-    // Detect the user closing the popup (or cancelling on GitHub) without a
-    // result — reset to idle-with-note rather than stranding them "waiting".
-    stopPolling();
-    pollRef.current = window.setInterval(() => {
-      if (popupRef.current && !popupRef.current.closed) return;
-      stopPolling();
-      if (phaseRef.current === "waiting") setPhaseBoth("incomplete");
-      popupRef.current = null;
-    }, 500);
+  const entryUrl = `${REQUEST_ACCESS.href}?opener=${encodeURIComponent(
+    window.location.origin,
+  )}`;
+
+  // Must open synchronously inside the click handler or the popup is blocked.
+  // `mode=popup` tells the closer it's in a popup regardless of window.opener
+  // (which a future COOP header could sever) — opener is the delivery check
+  // only, never the popup detector.
+  const opened = window.open(
+    `${entryUrl}&mode=popup`,
+    "tripwire-waitlist",
+    "popup,width=520,height=680",
+  );
+
+  // Blocked → full-page redirect WITHOUT mode=popup, so the closer treats it
+  // as a full-page flow and navigates in place (not a stranded popup).
+  if (!opened) {
+    window.location.href = entryUrl;
+    return;
   }
 
-  if (phase === "success") {
+  popup = opened;
+  setPhase("waiting");
+
+  // Detect the user closing the popup (or cancelling on GitHub) without a
+  // result — reset to idle-with-note rather than stranding them "waiting".
+  stopPolling();
+  poll = window.setInterval(() => {
+    if (popup && !popup.closed) return;
+    stopPolling();
+    if (phase === "waiting") setPhase("incomplete");
+    popup = null;
+  }, 500);
+}
+
+const NOTES: Partial<Record<Phase, string>> = {
+  rejected: "We can't add you to the beta right now.",
+  incomplete: "Didn't finish. You can try again.",
+};
+
+export default function RequestAccessCta({ size }: { size: "nav" | "xl" }) {
+  const current = useSyncExternalStore(subscribe, () => phase, () => "idle" as Phase);
+  const sizeClass = size === "nav" ? "btn-nav" : "btn-xl";
+  const arrow = size === "xl" ? <Arrow /> : null;
+
+  if (current === "approved") {
     return (
-      <div className={`flex items-center gap-3 ${justify}`}>
-        <span className={`${buttonClasses} inline-block cursor-default`}>
-          You&apos;re on the waitlist
-        </span>
-        <span className="text-sm text-muted">Check your email — we review requests manually.</span>
-      </div>
+      <a href={APP.home} className={cn(buttonVariants({ size: "lg" }), sizeClass)}>
+        Open Tripwire
+        {arrow}
+      </a>
     );
   }
+
+  if (current === "pending") {
+    return (
+      <span role="status" className={cn(buttonVariants({ variant: "secondary", size: "lg" }), sizeClass, "cursor-default")}>
+        You&apos;re on the waitlist
+      </span>
+    );
+  }
+
+  const note = size === "xl" ? NOTES[current] : undefined;
 
   return (
-    <div className={`flex flex-col gap-1.5 ${align === "center" ? "items-center" : "items-start"}`}>
-      <div className={`flex items-center gap-4 ${justify}`}>
-        <a
-          href={REQUEST_ACCESS.href}
-          onClick={handleClick}
-          aria-busy={phase === "waiting"}
-          className={`${buttonClasses} inline-block transition-opacity duration-150 hover:opacity-85 ${
-            phase === "waiting" ? "pointer-events-none opacity-70" : ""
-          }`}
-        >
-          {phase === "waiting" ? "Opening GitHub…" : label}
-        </a>
-      </div>
-      {phase === "incomplete" ? (
-        <span className="text-sm text-muted">
-          Didn&apos;t finish — you can try again.
+    <span className="relative flex flex-col items-center">
+      <a
+        href={REQUEST_ACCESS.href}
+        onClick={handleClick}
+        aria-busy={current === "waiting" || undefined}
+        className={cn(buttonVariants({ size: "lg" }), sizeClass, current === "waiting" && "pointer-events-none")}
+      >
+        {current === "waiting" ? "Opening GitHub" : "Join the beta"}
+        {arrow}
+      </a>
+      {size === "xl" ? (
+        <span aria-live="polite" className="absolute top-full left-1/2 mt-2 -translate-x-1/2 text-[13px] leading-[18px] whitespace-nowrap text-text-2">
+          {note}
         </span>
       ) : null}
-    </div>
+    </span>
   );
 }
