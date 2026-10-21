@@ -260,19 +260,17 @@
     display: block;
     position: absolute;
     bottom: 0;
-    width: 156px;
+    width: calc((100vw - 100%) / 2 - 2px);
     pointer-events: none;
     font-family: var(--font-mono);
   }
 
   .lander .fire-l {
     right: calc(100% + 2px);
-    mask-image: linear-gradient(to left, #000 80%, transparent);
   }
 
   .lander .fire-r {
     left: calc(100% + 2px);
-    mask-image: linear-gradient(to right, #000 80%, transparent);
   }
 }
 

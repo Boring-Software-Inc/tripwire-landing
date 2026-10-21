@@ -3,10 +3,9 @@
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/glaze/utils";
 
-const W = 40;
+const BASE_COLS = 40;
 const CW = 3.9;
 const LH = 7;
-const WIDTH = 156;
 const FRAME_MS = 130;
 const PHASE_STEP = 0.2;
 const HOT = "X#XX#%";
@@ -44,10 +43,13 @@ export function AsciiFire({
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
     const H = Math.floor(height / LH);
-    const kind = new Uint8Array(W * H);
-    const glyph = new Uint8Array(W * H);
-    const hs = new Float32Array(W);
-    const jitter = new Float32Array(W);
+    let W = 0;
+    let width = 0;
+    let kind = new Uint8Array(0);
+    let glyph = new Uint8Array(0);
+    let hs = new Float32Array(0);
+    let jitter = new Float32Array(0);
+    let field: number[] = [];
     const ex = new Float32Array(embers);
     const ey = new Float32Array(embers);
     const age = new Float32Array(embers);
@@ -68,17 +70,46 @@ export function AsciiFire({
     };
     const pick = (set: string) => Math.floor(rand() * set.length);
 
-    reseed(seed);
-    for (let c = 0; c < W; c++) jitter[c] = 1 + 0.12 * (rand() - 0.5);
+    const layout = (px: number) => {
+      width = px;
+      W = Math.max(1, Math.ceil(px / CW));
+      kind = new Uint8Array(W * H);
+      glyph = new Uint8Array(W * H);
+      hs = new Float32Array(W);
+      jitter = new Float32Array(W);
+      reseed(seed);
+      for (let c = 0; c < W; c++) jitter[c] = 1 + 0.12 * (rand() - 0.5);
+      const shift = W - BASE_COLS;
+      field = [];
+      let x = Infinity;
+      for (const [px0, amp, wd] of peaks) {
+        x = px0 + shift;
+        field.push(x, amp, wd);
+      }
+      reseed(seed * 7 + 1);
+      x -= 7 + rand() * 6;
+      while (x > -4) {
+        field.push(x, 0.3 + rand() * 0.42, 2.5 + rand() * 3);
+        x -= 7 + rand() * 6;
+      }
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.textBaseline = "top";
+      if (theme.font) ctx.font = theme.font;
+      for (let e = 0; e < embers; e++) alive[e] = 0;
+    };
 
-    const theme = { hot: "#E8461C", body: "#F97316", spark: "#FBBF24", k: 1 };
+    const theme = { hot: "#E8461C", body: "#F97316", spark: "#FBBF24", k: 1, font: "" };
     const readTheme = () => {
       const style = getComputedStyle(canvas);
       theme.hot = style.getPropertyValue("--fire-hot").trim() || theme.hot;
       theme.body = style.getPropertyValue("--fire-body").trim() || theme.body;
       theme.spark = style.getPropertyValue("--fire-spark").trim() || theme.spark;
       theme.k = Number.parseFloat(style.getPropertyValue("--fire-k")) || 1;
-      ctx.font = `500 6.5px ${style.fontFamily}`;
+      theme.font = `500 6.5px ${style.fontFamily}`;
+      ctx.font = theme.font;
     };
 
     let phase = 0;
@@ -86,9 +117,10 @@ export function AsciiFire({
     const build = () => {
       for (let c = 0; c < W; c++) {
         let h = 0.04 + 0.03 * Math.sin(c * 0.5 + phase);
-        for (const [px, amp, wd] of peaks) {
-          const d = (c - px) / wd;
-          const a = amp * (0.9 + 0.1 * Math.sin(phase * 2.1 + px));
+        for (let p = 0; p < field.length; p += 3) {
+          const px = field[p];
+          const d = (c - px) / field[p + 2];
+          const a = field[p + 1] * (0.9 + 0.1 * Math.sin(phase * 2.1 + px));
           h = Math.max(h, a * Math.exp(-d * d));
         }
         hs[c] = h * jitter[c] * H;
@@ -133,10 +165,10 @@ export function AsciiFire({
       }
     };
 
-    const xOf = (c: number) => (side === "l" ? c : W - 1 - c) * CW;
+    const xOf = (c: number) => (side === "l" ? width - (W - c) * CW : (W - 1 - c) * CW);
 
     const draw = () => {
-      ctx.clearRect(0, 0, WIDTH, height);
+      ctx.clearRect(0, 0, width, height);
       for (let pass = 0; pass < 7; pass++) {
         const want = pass < 4 ? BODY : pass === 4 ? HOT_K : pass === 5 ? FLECK_K : SPARK_K;
         const lo = pass < 4 ? Math.floor((pass * H) / 4) : 0;
@@ -195,12 +227,6 @@ export function AsciiFire({
       }
     };
 
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
-    canvas.width = Math.round(WIDTH * dpr);
-    canvas.height = Math.round(height * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.textBaseline = "top";
-
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     let timer = 0;
     let visible = false;
@@ -223,10 +249,23 @@ export function AsciiFire({
     const start = () => {
       ready = true;
       readTheme();
+      layout(canvas.clientWidth);
       build();
       draw();
       run();
     };
+    let resizeTimer = 0;
+    const ro = new ResizeObserver(() => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        const px = canvas.clientWidth;
+        if (!ready || !px || px === width) return;
+        layout(px);
+        build();
+        draw();
+      }, 150);
+    });
+    ro.observe(canvas);
     document.fonts.load(`500 6.5px ${getComputedStyle(canvas).fontFamily}`).then(start, start);
 
     const io = new IntersectionObserver(([entry]) => {
@@ -246,11 +285,13 @@ export function AsciiFire({
 
     return () => {
       stop();
+      window.clearTimeout(resizeTimer);
+      ro.disconnect();
       io.disconnect();
       mo.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
     };
   }, [side, height, seed, peaks, embers]);
 
-  return <canvas ref={ref} aria-hidden className={cn("fire", side === "l" ? "fire-l" : "fire-r")} style={{ width: WIDTH, height }} />;
+  return <canvas ref={ref} aria-hidden className={cn("fire", side === "l" ? "fire-l" : "fire-r")} style={{ height }} />;
 }
