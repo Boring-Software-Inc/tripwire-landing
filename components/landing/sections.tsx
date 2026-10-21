@@ -70,7 +70,7 @@ export function Hero() {
         </div>
       </div>
       <div className="only-sm relative flex flex-col items-center px-5 pt-7 pb-12">
-        <Ghost size={44} className="absolute top-[-1px] left-[calc(50%+42px)]" />
+        <Ghost size={39} className="absolute top-[3px] left-[calc(50%+44px)]" />
         <RuleCard rule={RULES.crypto} width={318} compact className="relative" />
       </div>
     </Row>
@@ -80,8 +80,8 @@ export function Hero() {
 export function Product() {
   return (
     <Row className="only-lg">
-      <div className="relative h-[640px] overflow-clip pt-[72px]">
-        <Ghost size={80} className="absolute top-5 left-[calc(50%+341px)]" />
+      <Ghost size={71} className="absolute top-[13px] left-[calc(50%+346px)]" />
+      <div className="pointer-events-none relative h-[640px] overflow-clip pt-[72px] [&>*]:pointer-events-auto">
         <AppWindow />
       </div>
     </Row>
@@ -240,7 +240,7 @@ export function ClosingCta() {
       }
     >
       <div className="flex flex-col items-center gap-5 px-5 py-14 text-center lg:gap-6 lg:px-9 lg:py-[120px]">
-        <Ghost size={104} face="happy" className="only-lg" />
+        <Ghost size={92} face="happy" className="only-lg my-1.5" />
         <h2 id="cta-title" className="t-cta text-text-1">
           Tripwire is in closed beta
         </h2>
