@@ -3,101 +3,195 @@
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/glaze/utils";
 
-const MAXH = 36;
-const RAMP = " .:-=+*#%@";
-const COLS = 40;
+const W = 40;
 const CW = 3.9;
-const CH = 7;
+const LH = 7;
 const WIDTH = 156;
-const STEP_MS = 75;
-const BANDS = [0.16, 0.32, 0.55, 0.8];
-const REACH = 1.35;
+const FRAME_MS = 130;
+const PHASE_STEP = 0.2;
+const HOT = "X#XX#%";
+const MID = "=+x+=X:";
+const LOW = ".:-.:.-=+";
+const FLECK = ".:'";
+const SPARK = "+*'";
+const EMBER = ".'*°";
+const BODY_ALPHA = [0.2, 0.3, 0.4, 0.5];
+const NONE = 0;
+const HOT_K = 1;
+const BODY = 2;
+const FLECK_K = 3;
+const SPARK_K = 4;
 
-function bandOf(h: number) {
-  const f = h / MAXH;
-  let b = 0;
-  while (b < BANDS.length && f >= BANDS[b]) b++;
-  return b;
-}
+export type Peak = readonly [x: number, amp: number, width: number];
 
-export function AsciiFire({ side, height, seed }: { side: "l" | "r"; height: number; seed: number }) {
+export function AsciiFire({
+  side,
+  height,
+  seed,
+  peaks,
+  embers,
+}: {
+  side: "l" | "r";
+  height: number;
+  seed: number;
+  peaks: readonly Peak[];
+  embers: number;
+}) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = ref.current;
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
-    const rows = Math.floor(height / CH);
-    const heat = new Uint8Array(COLS * rows);
-    const source = new Uint8Array(COLS);
-    const decay = new Float32Array(COLS);
-    const colors: string[] = ["", "", "", "", ""];
-    let s = seed >>> 0 || 1;
+    const H = Math.floor(height / LH);
+    const kind = new Uint8Array(W * H);
+    const glyph = new Uint8Array(W * H);
+    const hs = new Float32Array(W);
+    const jitter = new Float32Array(W);
+    const ex = new Float32Array(embers);
+    const ey = new Float32Array(embers);
+    const age = new Float32Array(embers);
+    const life = new Float32Array(embers);
+    const speed = new Float32Array(embers);
+    const eg = new Uint8Array(embers);
+    const alive = new Uint8Array(embers);
+    let nextEmber = 2 + Math.random() * 3;
+    let s = 1;
+    const reseed = (n: number) => {
+      s = Math.imul(n | 0, 2654435761) >>> 0 || 1;
+    };
     const rand = () => {
       s ^= s << 13;
       s ^= s >>> 17;
       s ^= s << 5;
       return (s >>> 0) / 4294967296;
     };
+    const pick = (set: string) => Math.floor(rand() * set.length);
 
-    const count = 4 + Math.floor(rand() * 2);
-    const homes = new Float32Array(count);
-    const centers = new Float32Array(count);
-    const sigmas = new Float32Array(count);
-    const chimneyDecay = new Float32Array(count);
-    const between = MAXH / (0.17 * rows);
-    const spacing = COLS / count;
-    for (let i = 0; i < count; i++) {
-      const w = 2.5 + rand() * 1.5;
-      homes[i] = centers[i] = w / 2 + i * spacing;
-      sigmas[i] = w / 2;
-      const reach = (1.05 - (0.6 * i) / Math.max(1, count - 1)) * (0.85 + rand() * 0.25) * REACH;
-      chimneyDecay[i] = MAXH / (reach * rows);
-    }
-    const phase0 = rand() * Math.PI * 2;
-    const phase1 = rand() * Math.PI * 2;
-    const tip = (u: number) => {
-      let r = rows - 1;
-      while (r > 0 && heat[(r - 1) * COLS + u] > 0) r--;
-      return r;
+    reseed(seed);
+    for (let c = 0; c < W; c++) jitter[c] = 1 + 0.12 * (rand() - 0.5);
+
+    const theme = { hot: "#E8461C", body: "#F97316", spark: "#FBBF24", k: 1 };
+    const readTheme = () => {
+      const style = getComputedStyle(canvas);
+      theme.hot = style.getPropertyValue("--fire-hot").trim() || theme.hot;
+      theme.body = style.getPropertyValue("--fire-body").trim() || theme.body;
+      theme.spark = style.getPropertyValue("--fire-spark").trim() || theme.spark;
+      theme.k = Number.parseFloat(style.getPropertyValue("--fire-k")) || 1;
+      ctx.font = `500 6.5px ${style.fontFamily}`;
     };
 
-    let t = 0;
-    const step = () => {
-      t++;
-      for (let i = 0; i < count; i++) {
-        centers[i] += (rand() * 2 - 1) * 0.12;
-        centers[i] += (homes[i] - centers[i]) * 0.08;
-      }
-      for (let u = 0; u < COLS; u++) {
-        let d = between;
-        for (let i = 0; i < count; i++) {
-          const z = (u - centers[i]) / sigmas[i];
-          const g = Math.exp(-z * z);
-          const c = between + (chimneyDecay[i] - between) * g;
-          if (c < d) d = c;
+    let phase = 0;
+    let frame = 0;
+    const build = () => {
+      for (let c = 0; c < W; c++) {
+        let h = 0.04 + 0.03 * Math.sin(c * 0.5 + phase);
+        for (const [px, amp, wd] of peaks) {
+          const d = (c - px) / wd;
+          const a = amp * (0.9 + 0.1 * Math.sin(phase * 2.1 + px));
+          h = Math.max(h, a * Math.exp(-d * d));
         }
-        decay[u] = d;
-        const n = (Math.sin(0.35 * u + phase0 + 0.05 * t) + 0.6 * Math.sin(0.13 * u + phase1 - 0.035 * t)) / 1.6;
-        source[u] = Math.round(MAXH * Math.min(1, (0.75 + 0.25 * (0.5 + 0.5 * n)) * (0.88 + 0.12 * (1 - u / COLS))));
+        hs[c] = h * jitter[c] * H;
       }
-      const base = (rows - 1) * COLS;
-      for (let u = 0; u < COLS; u++) heat[base + u] = source[u];
-      for (let r = 0; r < rows - 1; r++) {
-        for (let u = 0; u < COLS; u++) {
-          const d = decay[u];
-          const whole = Math.floor(d);
-          const h = heat[(r + 1) * COLS + u] - whole - (rand() < d - whole ? 1 : 0);
-          const roll = rand();
-          const du = roll < 0.07 ? (rand() < 0.5 ? -1 : 1) : roll < 0.11 ? 1 : 0;
-          const to = Math.min(COLS - 1, Math.max(0, u + du));
-          heat[r * COLS + to] = h > 0 ? h : 0;
+      for (let c = 0; c < W; c++) {
+        const h = hs[c];
+        for (let y = 0; y < H; y++) {
+          const i = (H - 1 - y) * W + c;
+          kind[i] = NONE;
+          if (y < h) {
+            const t = y / Math.max(h, 1);
+            if (t < 0.14 && h > H * 0.08) {
+              reseed(seed * 977 + i * 31 + (frame >> 3));
+              if (rand() < 0.88) {
+                kind[i] = HOT_K;
+                glyph[i] = pick(HOT);
+              }
+              reseed(seed * 31 + frame * 7919 + i);
+            } else if (t < 0.32) {
+              if (rand() < 0.7) {
+                kind[i] = BODY;
+                glyph[i] = 100 + pick(MID);
+              }
+            } else if (rand() < 0.7 * (1 - t) + 0.14) {
+              kind[i] = BODY;
+              glyph[i] = pick(LOW);
+            }
+          } else if (y < h + H * 0.12 && rand() < 0.035) {
+            kind[i] = FLECK_K;
+            glyph[i] = pick(FLECK);
+          }
         }
       }
-      if (rand() < 0.45) {
-        const u = Math.min(COLS - 1, Math.max(0, Math.round(centers[Math.floor(rand() * count)])));
-        const r = tip(u) - 2 - Math.floor(rand() * 6);
-        if (r >= 0) heat[r * COLS + u] = 2 + Math.floor(rand() * 4);
+      for (let n = 0; n < 6; n++) {
+        const r = Math.floor(H * 0.15 + rand() * H * 0.45);
+        const c = Math.floor(rand() * W);
+        const i = r * W + c;
+        if (kind[i] === BODY && glyph[i] < 3) {
+          kind[i] = SPARK_K;
+          glyph[i] = pick(SPARK);
+        }
+      }
+    };
+
+    const xOf = (c: number) => (side === "l" ? c : W - 1 - c) * CW;
+
+    const draw = () => {
+      ctx.clearRect(0, 0, WIDTH, height);
+      for (let pass = 0; pass < 7; pass++) {
+        const want = pass < 4 ? BODY : pass === 4 ? HOT_K : pass === 5 ? FLECK_K : SPARK_K;
+        const lo = pass < 4 ? Math.floor((pass * H) / 4) : 0;
+        const hi = pass < 4 ? Math.floor(((pass + 1) * H) / 4) : H;
+        ctx.fillStyle = want === HOT_K ? theme.hot : want === SPARK_K ? theme.spark : theme.body;
+        ctx.globalAlpha = theme.k * (pass < 4 ? BODY_ALPHA[pass] : want === HOT_K ? 0.6 : want === FLECK_K ? 0.18 : 0.7);
+        for (let r = lo; r < hi; r++) {
+          for (let c = 0; c < W; c++) {
+            const i = r * W + c;
+            if (kind[i] !== want) continue;
+            const g = glyph[i];
+            const ch =
+              want === HOT_K
+                ? HOT[g]
+                : want === FLECK_K
+                  ? FLECK[g]
+                  : want === SPARK_K
+                    ? SPARK[g]
+                    : g >= 100
+                      ? MID[g - 100]
+                      : LOW[g];
+            ctx.fillText(ch, xOf(c), r * LH);
+          }
+        }
+      }
+      ctx.fillStyle = theme.spark;
+      for (let e = 0; e < embers; e++) {
+        if (!alive[e]) continue;
+        ctx.globalAlpha = theme.k * 0.65 * (1 - age[e] / life[e]) * (0.8 + 0.2 * Math.random());
+        ctx.fillText(EMBER[eg[e]], xOf(ex[e]), ey[e]);
+      }
+      ctx.globalAlpha = 1;
+    };
+
+    const stepEmbers = (dt: number) => {
+      nextEmber -= dt;
+      for (let e = 0; e < embers; e++) {
+        if (!alive[e]) {
+          if (nextEmber > 0) continue;
+          let top = 0;
+          for (let c = 1; c < W; c++) if (hs[c] > hs[top]) top = c;
+          alive[e] = 1;
+          age[e] = 0;
+          life[e] = 3 + Math.random() * 3;
+          speed[e] = 20 + Math.random() * 20;
+          ex[e] = Math.min(W - 1, Math.max(0, top + Math.round(Math.random() * 4 - 2)));
+          ey[e] = height - hs[top] * LH;
+          eg[e] = Math.floor(Math.random() * EMBER.length);
+          nextEmber = 2 + Math.random() * 3;
+          continue;
+        }
+        age[e] += dt;
+        ey[e] += speed[e] * dt;
+        if (Math.random() < 0.15) ex[e] = Math.min(W - 1, Math.max(0, ex[e] + (Math.random() < 0.5 ? -1 : 1)));
+        if (age[e] >= life[e] || ey[e] > height * 0.88) alive[e] = 0;
       }
     };
 
@@ -107,47 +201,29 @@ export function AsciiFire({ side, height, seed }: { side: "l" | "r"; height: num
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.textBaseline = "top";
 
-    const readTheme = () => {
-      const style = getComputedStyle(canvas);
-      for (let i = 0; i < colors.length; i++) colors[i] = style.getPropertyValue(`--fire-${i + 1}`).trim() || "transparent";
-      ctx.font = `500 6.5px ${style.fontFamily}`;
-    };
-
-    const draw = () => {
-      ctx.clearRect(0, 0, WIDTH, height);
-      for (let b = 0; b < colors.length; b++) {
-        ctx.fillStyle = colors[b];
-        for (let r = 0; r < rows; r++) {
-          for (let u = 0; u < COLS; u++) {
-            const h = heat[r * COLS + u];
-            if (h < 1 || bandOf(h) !== b) continue;
-            const x = side === "l" ? WIDTH - (u + 1) * CW : u * CW;
-            ctx.fillText(RAMP[Math.min(9, Math.max(1, Math.ceil((h / MAXH) * 9)))], x, r * CH);
-          }
-        }
-      }
-    };
-
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     let timer = 0;
     let visible = false;
     let ready = false;
-    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const tick = () => {
+      frame++;
+      phase += PHASE_STEP;
+      build();
+      stepEmbers(FRAME_MS / 1000);
+      draw();
+    };
     const stop = () => {
       window.clearInterval(timer);
       timer = 0;
     };
     const run = () => {
       if (timer || !ready || reduced || !visible || document.hidden) return;
-      timer = window.setInterval(() => {
-        step();
-        draw();
-      }, STEP_MS);
+      timer = window.setInterval(tick, FRAME_MS);
     };
-
-    for (let i = 0, n = rows > 40 ? 90 : 70; i < n; i++) step();
     const start = () => {
       ready = true;
       readTheme();
+      build();
       draw();
       run();
     };
@@ -174,7 +250,7 @@ export function AsciiFire({ side, height, seed }: { side: "l" | "r"; height: num
       mo.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [side, height, seed]);
+  }, [side, height, seed, peaks, embers]);
 
   return <canvas ref={ref} aria-hidden className={cn("fire", side === "l" ? "fire-l" : "fire-r")} style={{ width: WIDTH, height }} />;
 }

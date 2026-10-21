@@ -3,21 +3,19 @@
   --grid-mark: color-mix(in srgb, var(--ink) 28%, transparent);
   --shell-hover: color-mix(in srgb, var(--shell), var(--ink) 4%);
   --col: min(1120px, 100% - 32px);
-  --fire-1: rgb(251 191 36 / 0.25);
-  --fire-2: rgb(251 191 36 / 0.4);
-  --fire-3: rgb(249 115 22 / 0.5);
-  --fire-4: rgb(249 115 22 / 0.7);
-  --fire-5: rgb(232 70 28 / 0.85);
+  --fire-hot: #e8461c;
+  --fire-body: #f97316;
+  --fire-spark: #fbbf24;
+  --fire-k: 1;
   min-height: 100dvh;
   overflow-x: clip;
 }
 
 .lander[data-theme="dark"] {
-  --fire-1: rgb(244 244 243 / 0.1);
-  --fire-2: rgb(244 244 243 / 0.2);
-  --fire-3: rgb(244 244 243 / 0.3);
-  --fire-4: rgb(244 244 243 / 0.42);
-  --fire-5: rgb(244 244 243 / 0.55);
+  --fire-hot: #f4f4f3;
+  --fire-body: #f4f4f3;
+  --fire-spark: #f4f4f3;
+  --fire-k: 0.7;
 }
 
 .lander .row {
@@ -265,19 +263,16 @@
     width: 156px;
     pointer-events: none;
     font-family: var(--font-mono);
-    mask-image: linear-gradient(to top, #000 45%, transparent);
   }
 
   .lander .fire-l {
     right: calc(100% + 2px);
-    mask-image: linear-gradient(to top, #000 45%, transparent), linear-gradient(to left, #000 55%, transparent);
-    mask-composite: intersect;
+    mask-image: linear-gradient(to left, #000 80%, transparent);
   }
 
   .lander .fire-r {
     left: calc(100% + 2px);
-    mask-image: linear-gradient(to top, #000 45%, transparent), linear-gradient(to right, #000 55%, transparent);
-    mask-composite: intersect;
+    mask-image: linear-gradient(to right, #000 80%, transparent);
   }
 }
 

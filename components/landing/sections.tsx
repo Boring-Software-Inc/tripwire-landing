@@ -3,7 +3,7 @@ import RequestAccessCta from "@/components/RequestAccessCta";
 import { buttonVariants } from "@/components/glaze/ui/button-variants";
 import { AppWindow } from "@/components/landing/app-window";
 import { Arrow } from "@/components/landing/arrow";
-import { AsciiFire } from "@/components/landing/ascii-fire";
+import { AsciiFire, type Peak } from "@/components/landing/ascii-fire";
 import { Ghost } from "@/components/landing/ghost";
 import { Row } from "@/components/landing/grid";
 import { Lockup } from "@/components/landing/logo";
@@ -12,6 +12,13 @@ import { RuleCard } from "@/components/landing/rule-card";
 import { RULES } from "@/components/landing/rules-data";
 import { APP } from "@/lib/content";
 import { cn } from "@/lib/glaze/utils";
+
+const PEAKS: Record<"heroL" | "heroR" | "ctaL" | "ctaR", Peak[]> = {
+  heroL: [[37.29, 0.865, 6.19], [29.36, 0.328, 3.7], [16.85, 0.636, 4.8], [8.52, 0.525, 3.33], [0.49, 0.345, 3.14]],
+  heroR: [[36.61, 0.906, 5.42], [24.41, 0.303, 4.01], [12.02, 0.334, 4.16], [1.32, 0.317, 3.64]],
+  ctaL: [[37.51, 0.953, 6.9], [27.63, 0.391, 4.88], [15.78, 0.515, 4.02], [7.37, 0.301, 3.61], [-3.15, 0.329, 4.88]],
+  ctaR: [[36.87, 0.989, 7.53], [28.58, 0.666, 4.41], [21.33, 0.7, 3.27], [12.5, 0.478, 4.27], [4.75, 0.588, 5.0]],
+};
 
 export function Nav() {
   return (
@@ -47,8 +54,8 @@ export function Hero() {
       aria-labelledby="hero-title"
       edges={
         <>
-          <AsciiFire side="l" height={448} seed={11} />
-          <AsciiFire side="r" height={448} seed={23} />
+          <AsciiFire side="l" height={448} seed={4} peaks={PEAKS.heroL} embers={2} />
+          <AsciiFire side="r" height={448} seed={9} peaks={PEAKS.heroR} embers={2} />
         </>
       }
     >
@@ -227,8 +234,8 @@ export function ClosingCta() {
       aria-labelledby="cta-title"
       edges={
         <>
-          <AsciiFire side="l" height={252} seed={37} />
-          <AsciiFire side="r" height={252} seed={41} />
+          <AsciiFire side="l" height={252} seed={21} peaks={PEAKS.ctaL} embers={1} />
+          <AsciiFire side="r" height={252} seed={25} peaks={PEAKS.ctaR} embers={1} />
         </>
       }
     >
