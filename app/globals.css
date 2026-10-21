@@ -61,25 +61,6 @@ body {
 }
 
 /*
- * Fade-up reveal. The hidden initial state only applies when JS is running
- * (html.js, set inline in the layout) and the user allows motion, so content
- * is never lost without JS or with reduced motion.
- */
-@media (prefers-reduced-motion: no-preference) {
-  .js .reveal {
-    opacity: 0;
-    translate: 0 16px;
-    transition:
-      opacity 400ms ease-out,
-      translate 400ms ease-out;
-  }
-  .js .reveal.is-visible {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-/*
  * Skip link. Hand-rolled rather than sr-only/focus:not-sr-only, because
  * not-sr-only resets padding and margin — it fights whichever padding utility
  * Tailwind happens to order last, so the link renders unpadded. Parking it
@@ -98,45 +79,6 @@ body {
   z-index: 100;
 }
 
-/* Mobile nav open/close — eases in and out instead of snapping */
-.nav-panel {
-  display: grid;
-  grid-template-rows: 0fr;
-  opacity: 0;
-  transition:
-    grid-template-rows 250ms ease-in-out,
-    opacity 200ms ease-in-out;
-}
-.nav-panel[data-open="true"] {
-  grid-template-rows: 1fr;
-  opacity: 1;
-}
-.nav-panel > div {
-  overflow: hidden;
-}
-@media (prefers-reduced-motion: reduce) {
-  .nav-panel {
-    transition: none;
-  }
-}
-
-/* Accordion height animation (grid-rows trick), disabled under reduced motion */
-.faq-panel {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 300ms ease-out;
-}
-.faq-panel[data-open="true"] {
-  grid-template-rows: 1fr;
-}
-.faq-panel > div {
-  overflow: hidden;
-}
-@media (prefers-reduced-motion: reduce) {
-  .faq-panel {
-    transition: none;
-  }
-}
 /*
  ---break---
  */

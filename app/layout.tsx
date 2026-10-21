@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, Geist } from "next/font/google";
+import { Inter } from "next/font/google";
+import { geist } from "@/lib/fonts";
 import { SITE } from "@/lib/content";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const inter = Inter({
   variable: "--font-inter",
@@ -16,6 +15,7 @@ export const metadata: Metadata = {
   title: SITE.title,
   description: SITE.description,
   openGraph: {
+    siteName: SITE.name,
     title: SITE.title,
     description: SITE.description,
     type: "website",
@@ -35,19 +35,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // suppressHydrationWarning: the inline script below adds the `js` class before hydration
     <html
       lang="en"
       suppressHydrationWarning
       className={cn("h-full", "antialiased", inter.variable, "font-sans", geist.variable)}
     >
       <body className="min-h-full flex flex-col">
-        {/* Marks JS as available so reveal animations can hide content pre-scroll (see globals.css) */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: "document.documentElement.classList.add('js')",
-          }}
-        />
         {/*
          * Skip link: visually hidden until focused, so a keyboard user can jump
          * past the nav instead of tabbing through it on every visit.

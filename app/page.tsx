@@ -1,32 +1,32 @@
-import { FEATURES } from "@/lib/content";
-import Nav from "@/components/sections/Nav";
-import Hero from "@/components/sections/Hero";
-import Sponsors from "@/components/sections/Sponsors";
-import FeatureSection from "@/components/sections/FeatureSection";
-import CtaBand from "@/components/sections/CtaBand";
-import Faq from "@/components/sections/Faq";
-import Footer from "@/components/sections/Footer";
+import type { CSSProperties } from "react";
+import "@/components/glaze/styles.css";
+import "./landing.css";
+import { ThemeScript } from "@/components/landing/theme-script";
+import { ClosingCta, Footer, Forges, Hero, Nav, Outcomes, Product, Rules } from "@/components/landing/sections";
+import { geist, geistMono } from "@/lib/fonts";
+import { GlazePortalProvider } from "@/lib/glaze/portal";
+
+const FONTS = {
+  "--font-sans": `${geist.style.fontFamily}, ui-sans-serif, system-ui, sans-serif`,
+  "--font-mono": `${geistMono.style.fontFamily}, ui-monospace, monospace`,
+} as CSSProperties;
 
 export default function Home() {
   return (
-    <>
+    <div className="glaze lander" style={FONTS} suppressHydrationWarning>
+      <ThemeScript />
+      <GlazePortalProvider>
       <Nav />
-      {/* tabIndex -1 so the skip link can move focus here, not just scroll */}
-      <main id="main" tabIndex={-1}>
+      <main id="main" tabIndex={-1} className="outline-none">
         <Hero />
-        <Sponsors />
-        {FEATURES.map((feature) => (
-          <FeatureSection
-            key={feature.id}
-            feature={feature}
-            /* the PR-surface section has no bottom hairline in the frame */
-            bordered={feature.id !== "pr-surface"}
-          />
-        ))}
-        <CtaBand />
-        <Faq />
+        <Product />
+        <Outcomes />
+        <Rules />
+        <Forges />
+        <ClosingCta />
       </main>
       <Footer />
-    </>
+      </GlazePortalProvider>
+    </div>
   );
 }

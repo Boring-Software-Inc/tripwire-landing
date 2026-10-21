@@ -1,0 +1,332 @@
+.lander {
+  --grid: color-mix(in srgb, var(--ink) 8%, transparent);
+  --grid-mark: color-mix(in srgb, var(--ink) 28%, transparent);
+  --shell-hover: color-mix(in srgb, var(--shell), var(--ink) 4%);
+  --col: min(1120px, 100% - 32px);
+  --fire-hot: #e8461c;
+  --fire-body: #f97316;
+  --fire-spark: #fbbf24;
+  --fire-k: 1;
+  min-height: 100dvh;
+  overflow-x: clip;
+}
+
+.lander[data-theme="dark"] {
+  --fire-hot: #f4f4f3;
+  --fire-body: #f4f4f3;
+  --fire-spark: #f4f4f3;
+  --fire-k: 0.7;
+}
+
+.lander .row {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  border-top: var(--line-width) solid var(--grid);
+}
+
+.lander .row-plain {
+  border-top: 0;
+}
+
+.lander .col {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: var(--col);
+  border-inline: var(--line-width) solid var(--grid);
+}
+
+.lander .plus {
+  position: absolute;
+  top: -11px;
+  z-index: 1;
+  width: 21px;
+  height: 21px;
+  color: var(--grid-mark);
+  pointer-events: none;
+}
+
+.lander .plus-l {
+  left: -11px;
+}
+
+.lander .plus-r {
+  right: -11px;
+}
+
+.lander .rule-x {
+  border-top: var(--line-width) solid var(--grid);
+}
+
+.lander .rule-l {
+  border-left: var(--line-width) solid var(--grid);
+}
+
+.lander .t-display {
+  font: 500 36px/40px var(--font-sans);
+  letter-spacing: -0.035em;
+}
+
+.lander .t-lede {
+  font: 400 16px/24px var(--font-sans);
+}
+
+.lander .t-section {
+  font: 500 24px/30px var(--font-sans);
+  letter-spacing: -0.02em;
+}
+
+.lander .t-section-sub {
+  font: 400 16px/24px var(--font-sans);
+}
+
+.lander .t-cta {
+  font: 500 24px/30px var(--font-sans);
+  letter-spacing: -0.02em;
+}
+
+.lander .t-cell-title {
+  font: 500 15px/22px var(--font-sans);
+}
+
+.lander .t-cell-body {
+  font: 400 14px/20px var(--font-sans);
+}
+
+.lander .t-forge {
+  font: 500 14px/20px var(--font-sans);
+}
+
+.lander .t-nav {
+  font: 500 14px/18px var(--font-sans);
+}
+
+.lander .t-word {
+  font: 500 14px/16px var(--font-sans);
+  letter-spacing: -0.01em;
+}
+
+.lander .btn-xl {
+  height: 48px;
+  padding-inline: 24px 20px;
+  gap: 8px;
+  font: 500 15px/19px var(--font-sans);
+  letter-spacing: 0;
+}
+
+.lander .btn-xl-flat {
+  padding-inline: 22px;
+}
+
+.lander .btn-nav {
+  height: 36px;
+  padding-inline: 16px;
+  font: 500 14px/18px var(--font-sans);
+  letter-spacing: 0;
+}
+
+.lander .arrow {
+  transition: translate var(--dur-state) var(--ease-out);
+}
+
+.lander a:hover .arrow,
+.lander button:hover .arrow {
+  translate: 3px 0;
+}
+
+.lander .link-draw {
+  position: relative;
+}
+
+.lander .link-draw::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-state) var(--ease-out);
+}
+
+.lander a:hover .link-draw::after,
+.lander a:focus-visible .link-draw::after {
+  transform: scaleX(1);
+}
+
+.lander .cell {
+  transition: background-color var(--dur-state) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .lander .cell:hover {
+    background-color: var(--hover-row);
+  }
+
+  .lander .card-hover:hover {
+    background-color: var(--shell-hover);
+  }
+}
+
+.lander .card-hover {
+  transition: background-color var(--dur-state) var(--ease-out);
+}
+
+.lander .forge-arrow {
+  opacity: 0;
+  translate: -4px 0;
+  transition:
+    opacity var(--dur-state) var(--ease-out),
+    translate var(--dur-state) var(--ease-out);
+}
+
+.lander .cell:hover .forge-arrow,
+.lander .cell:focus-visible .forge-arrow {
+  opacity: 1;
+  translate: 0 0;
+}
+
+.lander .slot {
+  border-bottom: var(--line-width) dotted var(--ink-45);
+}
+
+.lander .fire {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .lander {
+    --col: min(1120px, 100% - 64px);
+  }
+
+  .lander .t-display {
+    font: 500 64px/68px var(--font-sans);
+    letter-spacing: -0.04em;
+  }
+
+  .lander .t-lede {
+    font: 400 19px/28px var(--font-sans);
+  }
+
+  .lander .t-section {
+    font: 500 32px/38px var(--font-sans);
+    letter-spacing: -0.025em;
+  }
+
+  .lander .t-section-sub {
+    font: 400 17px/27px var(--font-sans);
+  }
+
+  .lander .t-cta {
+    font: 500 40px/46px var(--font-sans);
+    letter-spacing: -0.03em;
+  }
+
+  .lander .t-cell-title {
+    font: 500 16px/22px var(--font-sans);
+  }
+
+  .lander .t-cell-body {
+    font: 400 15px/23px var(--font-sans);
+  }
+
+  .lander .t-forge {
+    font: 500 16px/22px var(--font-sans);
+  }
+
+  .lander .t-word {
+    font: 500 17px/20px var(--font-sans);
+  }
+
+  .lander .btn-xl {
+    height: 44px;
+    padding-inline: 22px 18px;
+  }
+
+  .lander .btn-xl-flat {
+    padding-inline: 22px;
+  }
+
+  .lander .sticky-copy {
+    position: sticky;
+    top: 0;
+  }
+}
+
+@media (min-width: 1248px) {
+  .lander .fire {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    width: calc((100vw - 100%) / 2 - 2px);
+    pointer-events: none;
+    font-family: var(--font-mono);
+  }
+
+  .lander .fire-l {
+    right: calc(100% + 2px);
+  }
+
+  .lander .fire-r {
+    left: calc(100% + 2px);
+  }
+}
+
+@media (max-width: 1023.98px) {
+  .lander .only-lg {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .lander .only-sm {
+    display: none !important;
+  }
+}
+
+.lander .rule-card {
+  transition:
+    translate var(--dur-state) var(--ease-out),
+    background-color var(--dur-state) var(--ease-out);
+}
+
+.lander .rule-card[data-queued] {
+  translate: 0 -2px;
+  background-color: var(--shell-hover);
+}
+
+.lander .rule-enter {
+  animation: lander-enter var(--dur-overlay) var(--ease-out);
+}
+
+@keyframes lander-enter {
+  from {
+    opacity: 0;
+    translate: 0 4px;
+  }
+}
+
+.lander .value-slot {
+  field-sizing: content;
+  min-width: 3ch;
+  height: 26px;
+  border-bottom: var(--line-width) dotted var(--ink-45);
+  color: var(--text-1);
+  outline-offset: 2px;
+}
+
+.lander .value-slot::placeholder {
+  color: var(--text-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lander .rule-card[data-queued] {
+    translate: none;
+  }
+
+  .lander .rule-enter {
+    animation: none;
+  }
+}
