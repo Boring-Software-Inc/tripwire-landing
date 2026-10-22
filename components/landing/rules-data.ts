@@ -8,9 +8,10 @@ export type Rule = {
   matches: number;
   spikes: number[];
   label?: string;
+  after?: string[];
 };
 
-export const RULES: Record<"crypto" | "age" | "honeypot" | "files", Rule> = {
+export const RULES: Record<"crypto" | "age" | "honeypot" | "files" | "merged", Rule> = {
   crypto: {
     title: "Crypto address",
     words: ["Catches", "cryptocurrency", "addresses", "in", "titles,", "comments", "and", "diffs."],
@@ -38,5 +39,13 @@ export const RULES: Record<"crypto" | "age" | "honeypot" | "files", Rule> = {
     value: "200 files",
     matches: 1,
     spikes: [9.3],
+  },
+  merged: {
+    title: "Merged change requests",
+    words: ["Requires"],
+    value: "1 merged change request",
+    after: ["in", "other", "people\u2019s", "repos,", "as", "proof", "that", "someone", "else\u2026"],
+    matches: 0,
+    spikes: [],
   },
 };

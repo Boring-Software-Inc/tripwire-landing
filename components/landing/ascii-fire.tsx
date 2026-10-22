@@ -8,12 +8,12 @@ const CW = 3.9;
 const LH = 7;
 const FRAME_MS = 130;
 const PHASE_STEP = 0.2;
-const HOT = "X#XX#%";
-const MID = "=+x+=X:";
-const LOW = ".:-.:.-=+";
+export const HOT = "X#XX#%";
+export const MID = "=+x+=X:";
+export const LOW = ".:-.:.-=+";
 const FLECK = ".:'";
 const SPARK = "+*'";
-const EMBER = ".'*°";
+export const EMBER = ".'*°";
 const BODY_ALPHA = [0.2, 0.3, 0.4, 0.5];
 const NONE = 0;
 const HOT_K = 1;
@@ -29,7 +29,9 @@ export function AsciiFire({
   seed,
   peaks,
   embers,
+  compact = false,
 }: {
+  compact?: boolean;
   side: "l" | "r";
   height: number;
   seed: number;
@@ -298,5 +300,5 @@ export function AsciiFire({
     };
   }, [side, height, seed, peaks, embers]);
 
-  return <canvas ref={ref} aria-hidden className={cn("fire", side === "l" ? "fire-l" : "fire-r")} style={{ height }} />;
+  return <canvas ref={ref} aria-hidden className={cn("fire", compact && "fire-compact", side === "l" ? "fire-l" : "fire-r")} style={{ height }} />;
 }

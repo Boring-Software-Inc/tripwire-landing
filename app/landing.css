@@ -7,6 +7,14 @@
   --fire-body: #f97316;
   --fire-spark: #fbbf24;
   --fire-k: 1;
+  --brand-fire-body: #f97316;
+  --brand-fire-hot: #e8461c;
+  --stage-ground: color-mix(in srgb, var(--page), var(--ink) 2%);
+  --node-bg: var(--paper);
+  --chrome-dot: color-mix(in srgb, var(--ink) 15%, transparent);
+  --chrome-field: color-mix(in srgb, var(--ink) 5%, transparent);
+  --chrome-text: color-mix(in srgb, var(--ink) 50%, transparent);
+  --hatch: color-mix(in srgb, var(--ink) 9%, transparent);
   min-height: 100dvh;
   overflow-x: clip;
 }
@@ -16,6 +24,8 @@
   --fire-body: #f4f4f3;
   --fire-spark: #f4f4f3;
   --fire-k: 0.7;
+  --stage-ground: #090909;
+  --node-bg: #1a1a1a;
 }
 
 .lander .row {
@@ -61,6 +71,166 @@
 
 .lander .rule-l {
   border-left: var(--line-width) solid var(--grid);
+}
+
+.lander .t-hero {
+  position: relative;
+  font: 500 min(9.2vw, 44px) / 1.11 var(--font-sans);
+  letter-spacing: -0.045em;
+}
+
+.lander .hero-line {
+  flex-direction: column;
+  align-items: center;
+}
+
+.lander .hero-line > .hero-slot {
+  height: 1.11em;
+}
+
+.lander .hero-line > .hero-slot {
+  justify-content: center;
+  transition: width 500ms var(--ease-out);
+}
+
+.lander .hero-word {
+  will-change: opacity, transform;
+}
+
+.lander .hero-fire {
+  position: absolute;
+  max-width: none;
+  pointer-events: none;
+  font-family: var(--font-mono);
+}
+
+.lander .hero-measure {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  white-space: nowrap;
+  inset: 0 auto auto 0;
+  display: flex;
+}
+
+.lander .t-caption {
+  font: 500 26px/32px var(--font-sans);
+  letter-spacing: -0.03em;
+}
+
+.lander .t-feature {
+  font: 500 24px/30px var(--font-sans);
+  letter-spacing: -0.03em;
+}
+
+.lander .t-body {
+  font: 400 16px/24px var(--font-sans);
+}
+
+.lander .t-link {
+  font: 500 15px/20px var(--font-sans);
+}
+
+.lander .font-system {
+  font-family: system-ui, sans-serif;
+}
+
+.lander .font-geist {
+  font-family: var(--font-sans);
+}
+
+.lander .app-window {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--ink) 12%, transparent),
+    0 -1px 0 color-mix(in srgb, var(--ink) 15%, transparent);
+}
+
+.lander .stage-fade {
+  background: linear-gradient(to bottom, transparent 0%, var(--stage-ground) 85%);
+}
+
+.lander .hatch {
+  background: repeating-linear-gradient(135deg, var(--hatch) 0 1px, transparent 1px 8px);
+}
+
+.lander .feature-stage {
+  background-color: var(--stage-ground);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 12%, transparent);
+}
+
+.lander .mini-window {
+  background-color: var(--shell);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 12%, transparent);
+}
+
+.lander .phone-card {
+  border-color: color-mix(in srgb, var(--ink) 10%, transparent);
+}
+
+.lander .wf-node {
+  background-color: var(--node-bg);
+  border-color: color-mix(in srgb, var(--ink) 10%, transparent);
+  font-family: system-ui, sans-serif;
+}
+
+.lander .wf-node-selected {
+  border-color: color-mix(in srgb, var(--ink) 40%, transparent);
+}
+
+.lander .wf-rule {
+  border-color: color-mix(in srgb, var(--ink) 6%, transparent);
+}
+
+.lander .wf-title {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--ink) 80%, transparent);
+}
+
+.lander .wf-meta {
+  font-size: 12px;
+  line-height: 16px;
+  color: color-mix(in srgb, var(--ink) 60%, transparent);
+}
+
+.lander .wf-value {
+  font-size: 12px;
+  line-height: 16px;
+  color: color-mix(in srgb, var(--ink) 80%, transparent);
+}
+
+.lander .wf-edges {
+  fill: none;
+  stroke: color-mix(in srgb, var(--ink) 35%, transparent);
+  stroke-width: 1.2;
+}
+
+.lander .node-port-idle {
+  background-color: color-mix(in srgb, var(--ink) 45%, transparent);
+}
+
+.lander .node-port-ok {
+  background-color: #2c9a59;
+}
+
+.lander .node-port-fail {
+  background-color: #e35e49;
+}
+
+.lander .q-shell {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 10%, transparent);
+}
+
+.lander .q-approve {
+  background-color: rgb(16 185 129 / 0.1);
+  color: #34d399;
+}
+
+.lander .q-deny {
+  background-color: rgb(239 68 68 / 0.1);
+  color: #f87171;
 }
 
 .lander .t-display {
@@ -120,8 +290,8 @@
 }
 
 .lander .btn-nav {
-  height: 36px;
-  padding-inline: 16px;
+  height: 32px;
+  padding-inline: 14px;
   font: 500 14px/18px var(--font-sans);
   letter-spacing: 0;
 }
@@ -206,6 +376,34 @@
     letter-spacing: -0.04em;
   }
 
+  .lander .t-hero {
+    font: 500 80px/84px var(--font-sans);
+    letter-spacing: -0.045em;
+  }
+
+  .lander .hero-line {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 22px;
+  }
+
+  .lander .hero-line > .hero-slot {
+    height: auto;
+  }
+
+  .lander .hero-slot {
+    padding-inline: 4px;
+  }
+
+  .lander .t-caption {
+    font: 500 32px/36px var(--font-sans);
+    letter-spacing: -0.03em;
+  }
+
+  .lander .t-feature {
+    font: 500 26px/32px var(--font-sans);
+  }
+
   .lander .t-lede {
     font: 400 19px/28px var(--font-sans);
   }
@@ -249,6 +447,11 @@
     padding-inline: 22px;
   }
 
+  .lander .btn-nav {
+    height: 36px;
+    padding-inline: 16px;
+  }
+
   .lander .sticky-copy {
     position: sticky;
     top: 0;
@@ -275,13 +478,31 @@
 }
 
 @media (max-width: 1023.98px) {
+  .lander .fire-compact {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    width: calc((100vw - 100%) / 2 - 2px);
+    pointer-events: none;
+    font-family: var(--font-mono);
+  }
+
+  .lander .fire-compact.fire-l {
+    right: calc(100% + 2px);
+  }
+
+  .lander .fire-compact.fire-r {
+    left: calc(100% + 2px);
+  }
+
   .lander .only-lg {
     display: none !important;
   }
 }
 
 @media (min-width: 1024px) {
-  .lander .only-sm {
+  .lander .only-sm,
+  .lander .fire-compact {
     display: none !important;
   }
 }

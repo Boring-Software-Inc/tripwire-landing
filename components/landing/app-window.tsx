@@ -34,8 +34,18 @@ export function AppWindow() {
   const [off, setOff] = useState(0);
   const count = (on: boolean) => setOff((n) => n + (on ? -1 : 1));
   return (
-    <div className="relative flex h-[620px] w-full rounded-t-[16px] bg-shell px-1 pt-1 select-none">
-      <div className="flex grow flex-col overflow-clip rounded-t-[12px] bg-page text-[14px] leading-[18px]">
+    <div className="app-window relative flex h-[640px] w-[960px] shrink-0 flex-col rounded-t-[16px] bg-shell px-1 select-none">
+      <div className="relative flex h-9 shrink-0 items-center justify-center px-3">
+        <span className="absolute top-[13px] left-3.5 flex gap-[7px]">
+          <span className="size-2.5 rounded-full bg-(--chrome-dot)" />
+          <span className="size-2.5 rounded-full bg-(--chrome-dot)" />
+          <span className="size-2.5 rounded-full bg-(--chrome-dot)" />
+        </span>
+        <span className="flex h-[22px] items-center rounded-[6px] bg-(--chrome-field) px-3.5 font-mono text-[11px] leading-[14px] text-(--chrome-text)">
+          tripwire.sh/acme/widgets/rules
+        </span>
+      </div>
+      <div className="font-system flex grow flex-col overflow-clip rounded-t-[12px] bg-page text-[14px] leading-[18px]">
         <div className="flex h-[52px] shrink-0 items-center gap-5 border-b border-line-faint px-4">
           <div className="flex items-center gap-2.5">
             <Logo size={24} />
@@ -93,11 +103,51 @@ export function AppWindow() {
               <Sort className="text-text-3" />
             </span>
           </div>
-          <div className="flex w-[768px] flex-wrap gap-3">
+          <div className="flex w-[768px] flex-wrap gap-3 font-geist">
             <RuleCard rule={RULES.crypto} width={378} onToggle={count} />
             <RuleCard rule={RULES.age} width={378} onToggle={count} />
             <RuleCard rule={RULES.honeypot} width={378} onToggle={count} />
             <RuleCard rule={RULES.files} width={378} onToggle={count} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function PhoneWindow() {
+  return (
+    <div className="app-window relative flex h-[520px] w-[min(330px,calc(100%-16px))] shrink-0 flex-col rounded-t-[16px] bg-shell px-1 select-none">
+      <div className="relative flex h-8 shrink-0 items-center justify-center">
+        <span className="absolute top-3 left-2.5 flex gap-[5px]">
+          <span className="size-2 rounded-full bg-(--chrome-dot)" />
+          <span className="size-2 rounded-full bg-(--chrome-dot)" />
+          <span className="size-2 rounded-full bg-(--chrome-dot)" />
+        </span>
+        <span className="flex h-5 max-w-[calc(100%-100px)] items-center rounded-[6px] bg-(--chrome-field) px-2.5 font-mono text-[10px] leading-3 text-(--chrome-text)">
+          <span className="truncate">tripwire.sh/acme/widgets/rules</span>
+        </span>
+      </div>
+      <div className="flex grow flex-col overflow-clip rounded-t-[12px] bg-page">
+        <div className="flex w-full flex-col gap-5 px-3.5 pt-5 pb-8">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[28px] leading-[34px] font-medium text-text-1">Rules</span>
+              <span className="glass glass-ink flex h-8 shrink-0 items-center gap-1.5 rounded-pill px-3.5 text-[13px] leading-[19.5px] font-medium">
+                <svg aria-hidden width="12" height="12" viewBox="0 0 14 14" className="shrink-0">
+                  <path d="M7 2.5v9M2.5 7h9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+                </svg>
+                Create rule
+              </span>
+            </div>
+            <span className="text-[14px] leading-[21px] text-text-2">
+              Requirements that every contributor outside your org must meet on every change request.
+            </span>
+          </div>
+          <div className="flex flex-col gap-3">
+            <RuleCard rule={RULES.crypto} phone />
+            <RuleCard rule={RULES.age} phone />
+            <RuleCard rule={RULES.merged} phone />
           </div>
         </div>
       </div>

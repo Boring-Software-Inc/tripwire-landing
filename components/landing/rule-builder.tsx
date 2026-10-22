@@ -146,6 +146,8 @@ export function RuleBuilder() {
         ))}
         <RuleCard rule={RULES.crypto} hover className="only-lg min-w-0" />
         <RuleCard rule={RULES.age} hover className="only-lg min-w-0" />
+        <RuleCard rule={RULES.crypto} phone hover className="only-sm" />
+        <RuleCard rule={RULES.age} phone hover className="only-sm" />
       </div>
     </>
   );

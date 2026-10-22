@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import "@/components/glaze/styles.css";
 import "./landing.css";
 import { ThemeScript } from "@/components/landing/theme-script";
-import { ClosingCta, Footer, Forges, Hero, Nav, Outcomes, Product, Rules } from "@/components/landing/sections";
+import { ClosingCta, Features, Footer, Forges, Hero, Nav, Outcomes, Product, Rules } from "@/components/landing/sections";
 import { geist, geistMono } from "@/lib/fonts";
 import { GlazePortalProvider } from "@/lib/glaze/portal";
 
@@ -20,8 +20,9 @@ export default function Home() {
       <main id="main" tabIndex={-1} className="outline-none">
         <Hero />
         <Product />
-        <Outcomes />
         <Rules />
+        <Features />
+        <Outcomes />
         <Forges />
         <ClosingCta />
       </main>
