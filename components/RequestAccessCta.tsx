@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { Arrow } from "@/components/landing/arrow";
 import { buttonVariants } from "@/components/glaze/ui/button-variants";
-import { trackEvent, type Placement } from "@/lib/analytics";
+import { trackEvent, withTrackingParams, type Placement } from "@/lib/analytics";
 import { APP, REQUEST_ACCESS } from "@/lib/content";
 import { cn } from "@/lib/glaze/utils";
 
@@ -118,9 +118,9 @@ function handleClick(e: React.MouseEvent<HTMLAnchorElement>, placement: Placemen
   if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
   e.preventDefault();
 
-  const entryUrl = `${REQUEST_ACCESS.href}?opener=${encodeURIComponent(
-    window.location.origin,
-  )}`;
+  const entryUrl = withTrackingParams(
+    `${REQUEST_ACCESS.href}?opener=${encodeURIComponent(window.location.origin)}`,
+  );
 
   // Must open synchronously inside the click handler or the popup is blocked.
   // `mode=popup` tells the closer it's in a popup regardless of window.opener
