@@ -51,6 +51,7 @@ function Switch({ on, name, onFlip }: { on: boolean; name: string; onFlip: () =>
     <button
       type="button"
       role="switch"
+      data-demo="switch"
       aria-checked={on}
       aria-label={name}
       onClick={onFlip}
@@ -125,6 +126,7 @@ export function RuleCard({
             ) : onParam ? (
               <button
                 type="button"
+                data-demo="param"
                 aria-label={`Change ${rule.title}, now ${value}`}
                 onClick={() => setEditing(true)}
                 className={cn("slot slot-edit h-[18px] font-medium text-text-1", slotFont)}

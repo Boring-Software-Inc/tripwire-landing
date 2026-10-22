@@ -1,6 +1,8 @@
+import { Databuddy } from "@databuddy/sdk/react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { geist } from "@/lib/fonts";
+import { DATABUDDY_CLIENT_ID } from "@/lib/analytics";
 import { SITE } from "@/lib/content";
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -52,7 +54,7 @@ export default function RootLayout({
           Skip to content
         </a>
         {children}
-        {/* Analytics mount point: add the tracking snippet here when ready */}
+        <Databuddy clientId={DATABUDDY_CLIENT_ID} trackAttributes trackOutgoingLinks trackInteractions trackWebVitals />
       </body>
     </html>
   );

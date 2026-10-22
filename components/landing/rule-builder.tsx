@@ -4,6 +4,7 @@ import { useState } from "react";
 import { buttonVariants } from "@/components/glaze/ui/button-variants";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/glaze/ui/dropdown-menu";
 import { RuleCard } from "@/components/landing/rule-card";
+import { trackDemo } from "@/lib/analytics";
 import { RULES, type Rule } from "@/components/landing/rules-data";
 import { cn } from "@/lib/glaze/utils";
 
@@ -38,7 +39,7 @@ export function Pick({
 }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger aria-label={value ? `${label}: ${value}` : label} className={slotClass(!value)}>
+      <DropdownMenuTrigger data-demo={label.toLowerCase()} aria-label={value ? `${label}: ${value}` : label} className={slotClass(!value)}>
         {value ? value.toLowerCase() : placeholder}
       </DropdownMenuTrigger>
       <DropdownMenuContent size="sm">
@@ -80,6 +81,10 @@ export function RuleBuilder() {
     <>
       <form
         className="card-hover rounded-shell bg-shell p-[3px]"
+        onClickCapture={(e) => {
+          const el = (e.target as Element).closest?.("[data-demo]");
+          if (el) trackDemo("rule_builder", el.getAttribute("data-demo") ?? "unknown");
+        }}
         onSubmit={(e) => {
           e.preventDefault();
           save();
@@ -99,6 +104,7 @@ export function RuleBuilder() {
               onPick={(condition) => set({ condition })}
             />
             <input
+              data-demo="value"
               aria-label="Value"
               className="value-slot bg-transparent"
               placeholder="value"
@@ -110,6 +116,7 @@ export function RuleBuilder() {
             <span>a</span>
             <DropdownMenu>
               <DropdownMenuTrigger
+                data-demo="severity"
                 aria-label={draft.severity ? `Severity: ${draft.severity}` : "Severity"}
                 className={cn(
                   "flex h-[30px] items-center rounded-[8px] bg-paper px-2 ring-1 ring-line-control transition-colors duration-(--dur-state) ease-out hover:bg-hover data-popup-open:bg-hover",
@@ -133,7 +140,7 @@ export function RuleBuilder() {
               <button type="button" className={buttonVariants({ variant: "secondary", size: "sm" })} onClick={() => setDraft(EMPTY)}>
                 Cancel
               </button>
-              <button type="submit" disabled={!ready} className={buttonVariants({ size: "sm" })}>
+              <button type="submit" data-demo="save_rule" disabled={!ready} className={buttonVariants({ size: "sm" })}>
                 Save rule
               </button>
             </div>
