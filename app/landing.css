@@ -507,6 +507,33 @@
   }
 }
 
+@media (max-width: 639.98px) {
+  .lander .only-wide {
+    display: none !important;
+  }
+}
+
+@media (min-width: 640px) {
+  .lander .only-narrow {
+    display: none !important;
+  }
+}
+
+.lander .tab-scroll {
+  scrollbar-width: none;
+  mask-image: linear-gradient(to right, black calc(100% - 32px), transparent);
+}
+
+.lander .tab-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .lander .tab-scroll {
+    mask-image: none;
+  }
+}
+
 .lander .rule-card {
   transition:
     translate var(--dur-state) var(--ease-out),

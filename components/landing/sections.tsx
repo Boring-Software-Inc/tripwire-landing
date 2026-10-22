@@ -88,14 +88,16 @@ function TextLink({ href, children }: { href: string; children: ReactNode }) {
 export function Product() {
   return (
     <Row aria-labelledby="product-title">
-      <div className="only-lg relative flex h-[640px] justify-center overflow-clip pt-[72px]">
-        <Ghost size={71} className="absolute top-[7px] left-[calc(50%+295.6px)]" />
-        <AppWindow />
+      <div className="only-wide relative flex h-[640px] justify-center overflow-clip px-4 pt-[72px] lg:px-0">
+        <div className="relative w-full max-w-[960px]">
+          <Ghost size={71} className="absolute -top-[65px] right-[113.4px]" />
+          <AppWindow />
+        </div>
         <div className="stage-fade pointer-events-none absolute inset-x-0 bottom-0 flex h-[160px] justify-center overflow-hidden">
           <AsciiArt art={STAGE_FADE} className="shrink-0" />
         </div>
       </div>
-      <div className="only-sm relative flex h-[480px] justify-center overflow-clip pt-14">
+      <div className="only-narrow relative flex h-[480px] justify-center overflow-clip pt-14">
         <Ghost size={50} className="absolute top-[13px] left-[calc(50%+75.2px)]" />
         <PhoneWindow />
         <div className="stage-fade pointer-events-none absolute inset-x-0 bottom-0 flex h-[112px] justify-center overflow-hidden">

@@ -326,7 +326,7 @@ function CreateButton({ onClick, icon = false }: { onClick: () => void; icon?: b
 
 function CustomEmpty({ onCreate }: { onCreate: () => void }) {
   return (
-    <div className="flex w-full flex-col items-center gap-3 rounded-shell py-6 text-center font-geist ring-1 ring-line-faint">
+    <div className="col-span-2 flex w-full flex-col items-center gap-3 rounded-shell py-6 text-center font-geist ring-1 ring-line-faint">
       <div className="flex flex-col gap-1">
         <span className="type-label-lg text-text-1">No custom rules yet</span>
         <span className="max-w-[360px] type-body-sm text-text-2">A custom rule checks contributors and their changes against conditions you pick.</span>
@@ -374,29 +374,29 @@ export function AppWindow() {
     sort === "az" ? RULES[a].title.localeCompare(RULES[b].title) : RULES[b].matches - RULES[a].matches || ALL.indexOf(a) - ALL.indexOf(b),
   );
   return (
-    <div className="app-window relative flex h-[640px] w-[960px] shrink-0 flex-col rounded-t-[16px] bg-shell px-1 select-none">
+    <div className="app-window relative flex h-[640px] w-full flex-col rounded-t-[16px] bg-shell px-1 select-none">
       <Chrome url={`tripwire.sh/acme/${repo}/rules`} />
       <Stage>
         <div className="font-system flex grow flex-col text-[14px] leading-[18px]">
           <div className="flex h-[52px] shrink-0 items-center gap-5 border-b border-line-faint px-4">
-            <div className="flex items-center gap-2.5">
+            <div className="flex shrink-0 items-center gap-2.5">
               <Logo size={24} />
               <span className="text-text-disabled">/</span>
               <OrgSwitcher />
               <span className="text-text-disabled">/</span>
               <RepoSwitcher repo={repo} onPick={setRepo} />
             </div>
-            <div className="flex h-[52px] gap-5 pl-3">
+            <div className="tab-scroll flex h-[52px] min-w-0 gap-5 overflow-x-auto pl-3">
               {TABS.map((tab) =>
                 tab === "Rules" ? (
-                  <span key={tab} className="flex items-center border-b-2 border-text-1 pt-0.5 font-medium text-text-1">
+                  <span key={tab} className="flex shrink-0 items-center border-b-2 border-text-1 pt-0.5 font-medium text-text-1">
                     {tab}
                   </span>
                 ) : (
                   <button
                     key={tab}
                     type="button"
-                    className="flex items-center border-b-2 border-transparent pt-0.5 text-text-2 outline-none transition-colors duration-(--dur-state) ease-out hover:border-line-control hover:text-text-1 focus-visible:text-text-1"
+                    className="flex shrink-0 items-center border-b-2 border-transparent pt-0.5 text-text-2 outline-none transition-colors duration-(--dur-state) ease-out hover:border-line-control hover:text-text-1 focus-visible:text-text-1"
                   >
                     {tab}
                   </button>
@@ -404,15 +404,15 @@ export function AppWindow() {
               )}
             </div>
           </div>
-          <div className="flex flex-col items-center gap-6 pt-10">
-            <div className="flex w-[768px] items-start justify-between">
+          <div className="flex flex-col items-center gap-6 px-6 pt-10">
+            <div className="flex w-full max-w-[768px] items-start justify-between gap-4">
               <div className="flex flex-col gap-1.5">
                 <span className="text-[28px] leading-[34px] font-medium tracking-[-0.02em] text-text-1">Rules</span>
                 <span className="text-text-2">Requirements that every contributor outside your org must meet on every change request.</span>
               </div>
               <CreateButton onClick={() => setCreating(true)} />
             </div>
-            <div className="flex w-[768px] flex-col rounded-shell bg-shell p-[3px] ring-1 ring-line-faint">
+            <div className="flex w-full max-w-[768px] flex-col rounded-shell bg-shell p-[3px] ring-1 ring-line-faint">
               <div className="flex rounded-panel bg-paper">
                 {[
                   ["Matches", "8"],
@@ -426,7 +426,7 @@ export function AppWindow() {
               </div>
               <span className="px-3 pt-2 pb-1.5 text-[12px] leading-4 text-text-2">Last 24 hours</span>
             </div>
-            <div className="flex w-[768px] items-center justify-between">
+            <div className="flex w-full max-w-[768px] items-center justify-between gap-3">
               <span className="flex rounded-pill bg-paper p-0.5 ring-1 ring-line-faint">
                 <Segment label="All" count={ALL.length} on={show === "all"} onPick={() => setShow("all")} />
                 <Segment label="Active" count={active} on={show === "active"} onPick={() => setShow("active")} />
@@ -434,10 +434,10 @@ export function AppWindow() {
               </span>
               <SortMenu sort={sort} onSort={setSort} />
             </div>
-            <div className="flex w-[768px] flex-wrap gap-3 font-geist">
+            <div className="grid w-full max-w-[768px] grid-cols-2 gap-3 font-geist">
               {show === "custom" && custom.length === 0 ? <CustomEmpty onCreate={() => setCreating(true)} /> : null}
               {visible.map((k) => (
-                <RuleCard key={k} width={378} {...rules.card(k)} />
+                <RuleCard key={k} className="min-w-0" {...rules.card(k)} />
               ))}
             </div>
           </div>
