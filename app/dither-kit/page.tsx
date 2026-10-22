@@ -19,11 +19,13 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     type: "article",
     url: "/dither-kit",
+    images: [{ url: "/og.png", width: 1200, height: 630, type: "image/png" }],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
+    images: ["/og.png"],
   },
 };
 
