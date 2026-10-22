@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Rule } from "@/components/landing/rules-data";
+import { paramText, type Rule, type RuleParam } from "@/components/landing/rules-data";
 import { cn } from "@/lib/glaze/utils";
 
 function sparkPoints(spikes: number[]) {
@@ -12,6 +12,38 @@ function sparkPoints(spikes: number[]) {
   }
   pts.push("64,15");
   return pts.join(" ");
+}
+
+function ParamEditor({ param, onDone }: { param: RuleParam; onDone: (next: RuleParam | null) => void }) {
+  const [raw, setRaw] = useState(param.kind === "number" ? String(param.n) : param.text);
+  const commit = () => {
+    if (param.kind === "path") {
+      const text = raw.trim();
+      onDone(text ? { ...param, text } : null);
+      return;
+    }
+    const n = Number(raw);
+    onDone(Number.isInteger(n) && n >= param.min && n <= param.max ? { ...param, n } : null);
+  };
+  return (
+    <span className="flex items-center gap-1">
+      <input
+        autoFocus
+        aria-label={param.kind === "number" ? `Number of ${param.unit[1]}` : "Paths"}
+        inputMode={param.kind === "number" ? "numeric" : undefined}
+        className={cn("param-input", param.kind === "path" && "font-mono text-[11.5px]")}
+        value={raw}
+        onChange={(e) => setRaw(e.target.value)}
+        onFocus={(e) => e.currentTarget.select()}
+        onBlur={commit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") commit();
+          if (e.key === "Escape") onDone(null);
+        }}
+      />
+      {param.kind === "number" ? <span>{param.n === 1 ? param.unit[0] : param.unit[1]}</span> : null}
+    </span>
+  );
 }
 
 function Switch({ on, name, onFlip }: { on: boolean; name: string; onFlip: () => void }) {
@@ -42,7 +74,11 @@ export function RuleCard({
   phone = false,
   hover = false,
   className,
-  onToggle,
+  on: onProp,
+  onFlip,
+  param: paramProp,
+  onParam,
+  queued: queuedProp,
 }: {
   rule: Rule;
   width?: number;
@@ -50,18 +86,25 @@ export function RuleCard({
   phone?: boolean;
   hover?: boolean;
   className?: string;
-  onToggle?: (on: boolean) => void;
+  on?: boolean;
+  onFlip?: () => void;
+  param?: RuleParam;
+  onParam?: (next: RuleParam) => void;
+  queued?: boolean;
 }) {
-  const [on, setOn] = useState(true);
-  const flip = () => {
-    setOn(!on);
-    onToggle?.(!on);
-  };
+  const [onState, setOnState] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const on = onProp ?? onState;
+  const flip = onFlip ?? (() => setOnState(!onState));
+  const queued = queuedProp ?? !on;
+  const param = paramProp ?? rule.param;
+  const value = param ? paramText(param) : rule.value;
+  const slotFont = rule.mono ? "font-mono text-[11.5px] leading-[19.5px]" : "text-[13px] leading-[19.5px]";
   const meta = compact ? "text-[13px] leading-[18px]" : "text-[12px] leading-4";
   const head = (
     <>
       <div className="flex h-[21px] shrink-0 items-center gap-2">
-        <span className="line-clamp-1 text-[14px] leading-[21px] font-medium text-text-1">{rule.title}</span>
+        <span className={cn("line-clamp-1 text-[14px] leading-[21px] font-medium", on ? "text-text-1" : "text-text-2")}>{rule.title}</span>
         <span className="grow" />
         <Switch on={on} name={rule.title} onFlip={flip} />
       </div>
@@ -69,16 +112,28 @@ export function RuleCard({
         {rule.words.map((w, i) => (
           <span key={i}>{w}</span>
         ))}
-        {rule.value ? (
+        {value ? (
           <span className="flex">
-            <span
-              className={cn(
-                "slot h-[18px] font-medium text-text-1",
-                rule.mono ? "font-mono text-[11.5px] leading-[19.5px]" : "text-[13px] leading-[19.5px]",
-              )}
-            >
-              {rule.value}
-            </span>
+            {editing && param ? (
+              <ParamEditor
+                param={param}
+                onDone={(next) => {
+                  setEditing(false);
+                  if (next) onParam?.(next);
+                }}
+              />
+            ) : onParam ? (
+              <button
+                type="button"
+                aria-label={`Change ${rule.title}, now ${value}`}
+                onClick={() => setEditing(true)}
+                className={cn("slot slot-edit h-[18px] font-medium text-text-1", slotFont)}
+              >
+                {value}
+              </button>
+            ) : (
+              <span className={cn("slot h-[18px] font-medium text-text-1", slotFont)}>{value}</span>
+            )}
             {rule.after ? null : <span>.</span>}
           </span>
         ) : null}
@@ -133,7 +188,7 @@ export function RuleCard({
           hover && "card-hover",
           className,
         )}
-        data-queued={on ? undefined : ""}
+        data-queued={queued ? "" : undefined}
       >
         {head}
         <span className="grow" />
@@ -144,7 +199,7 @@ export function RuleCard({
   return (
     <div
       className={cn("rule-card flex shrink-0 flex-col rounded-shell bg-shell p-[3px]", !compact && "h-36", hover && "card-hover", className)}
-      data-queued={on ? undefined : ""}
+      data-queued={queued ? "" : undefined}
       style={{ width }}
     >
       <div className="flex grow flex-col gap-1.5 rounded-panel bg-paper px-[13px] py-[11px]">{head}</div>

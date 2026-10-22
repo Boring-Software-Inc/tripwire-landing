@@ -542,12 +542,51 @@
   color: var(--text-3);
 }
 
+.lander .slot-edit {
+  cursor: pointer;
+  transition: border-color var(--dur-state) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .lander .slot-edit:hover {
+    border-bottom-color: var(--text-1);
+  }
+}
+
+.lander .param-input {
+  field-sizing: content;
+  min-width: 2ch;
+  height: 18px;
+  border-bottom: var(--line-width) solid var(--text-1);
+  background: transparent;
+  color: var(--text-1);
+  font-weight: 500;
+  outline: none;
+}
+
+.lander .demo-nope[data-nope] {
+  animation: demo-nope 360ms var(--ease-out);
+}
+
+@keyframes demo-nope {
+  20% {
+    translate: -5px 0;
+  }
+  45% {
+    translate: 4px 0;
+  }
+  70% {
+    translate: -2px 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lander .rule-card[data-queued] {
     translate: none;
   }
 
-  .lander .rule-enter {
+  .lander .rule-enter,
+  .lander .demo-nope[data-nope] {
     animation: none;
   }
 }
