@@ -1,7 +1,7 @@
 "use client";
 
 import { Popover } from "@base-ui/react/popover";
-import { useState, type ReactNode } from "react";
+import { useState, type MouseEvent, type ReactNode } from "react";
 import { Add, Check, Icon, Search, Settings } from "@/components/glaze/icon";
 import { buttonVariants } from "@/components/glaze/ui/button-variants";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/glaze/ui/dropdown-menu";
@@ -11,6 +11,7 @@ import { RuleCard } from "@/components/landing/rule-card";
 import { RULES, type RuleParam } from "@/components/landing/rules-data";
 import { menuItemClass, menuPopupClass, menuSeparatorClass } from "@/lib/glaze/overlay";
 import { useGlazePortal } from "@/lib/glaze/portal";
+import { trackDemo } from "@/lib/analytics";
 import { cn } from "@/lib/glaze/utils";
 
 const TABS = ["Moderation", "Activity", "Rules", "Workflows", "Customize", "Analytics"];
@@ -103,13 +104,13 @@ const crumb =
 function OrgSwitcher() {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger aria-label="Org: acme. Switch org" className={crumb}>
+      <DropdownMenuTrigger data-demo="org_switcher" aria-label="Org: acme. Switch org" className={crumb}>
         <OrgAvatar />
         <span className="text-text-2">acme</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="min-w-56">
         {ORGS.map((o) => (
-          <DropdownMenuItem key={o.name}>
+          <DropdownMenuItem key={o.name} data-demo="org_pick">
             {o.personal ? <span className="size-5 shrink-0 rounded-[6px] bg-[linear-gradient(135deg,#e4d8c8,#a08c74)]" /> : <OrgAvatar />}
             <span className="min-w-0 flex-1 truncate">{o.name}</span>
             {o.personal ? <span className="type-caption text-text-3">Personal</span> : null}
@@ -117,11 +118,11 @@ function OrgSwitcher() {
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem data-demo="create_org">
           <Icon icon={Add} />
           Create org
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem data-demo="org_settings">
           <Icon icon={Settings} />
           Org settings
         </DropdownMenuItem>
@@ -147,7 +148,7 @@ function RepoSwitcher({ repo, onPick }: { repo: string; onPick: (name: string) =
         if (!next) setQ("");
       }}
     >
-      <Popover.Trigger aria-label={`Repo: ${repo}. Switch repo`} className={crumb}>
+      <Popover.Trigger data-demo="repo_switcher" aria-label={`Repo: ${repo}. Switch repo`} className={crumb}>
         <span className="font-medium text-text-1">{repo}</span>
         <Sort className="-ml-1 text-text-3" />
       </Popover.Trigger>
@@ -172,7 +173,7 @@ function RepoSwitcher({ repo, onPick }: { repo: string; onPick: (name: string) =
             <div className="flex flex-col p-1">
               {found.length === 0 ? <span className="px-2 py-2 type-label text-text-3">No repos match</span> : null}
               {found.map((r) => (
-                <button key={r.name} type="button" onClick={() => pick(r.name)} className={cn(menuItemClass, "hover:bg-hover focus-visible:bg-hover")}>
+                <button key={r.name} type="button" data-demo="repo_pick" onClick={() => pick(r.name)} className={cn(menuItemClass, "hover:bg-hover focus-visible:bg-hover")}>
                   <GitHubMark />
                   <span className="min-w-0 flex-1 truncate text-start">{r.name}</span>
                   {r.off ? <span className="type-caption text-text-3">Off</span> : null}
@@ -180,7 +181,7 @@ function RepoSwitcher({ repo, onPick }: { repo: string; onPick: (name: string) =
                 </button>
               ))}
               <span className={menuSeparatorClass} />
-              <button type="button" onClick={() => setOpen(false)} className={cn(menuItemClass, "hover:bg-hover focus-visible:bg-hover")}>
+              <button type="button" data-demo="connect_repos" onClick={() => setOpen(false)} className={cn(menuItemClass, "hover:bg-hover focus-visible:bg-hover")}>
                 <Icon icon={Add} />
                 Connect repos
               </button>
@@ -197,6 +198,7 @@ function Segment({ label, count, on, onPick }: { label: string; count: number; o
     <button
       type="button"
       aria-pressed={on}
+      data-demo={`segment_${label.toLowerCase()}`}
       onClick={onPick}
       className={cn(
         "group flex h-7 items-center gap-1.5 rounded-pill px-3 text-[13px] leading-[18px] outline-none transition-colors duration-(--dur-state) ease-out",
@@ -212,13 +214,13 @@ function Segment({ label, count, on, onPick }: { label: string; count: number; o
 function SortMenu({ sort, onSort }: { sort: SortKey; onSort: (s: SortKey) => void }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex h-[30px] items-center gap-2 rounded-pill bg-paper pr-2.5 pl-3 text-[13px] leading-[18px] text-text-1 ring-1 ring-line-control outline-none transition-colors duration-(--dur-state) ease-out hover:bg-hover focus-visible:bg-hover data-popup-open:bg-hover">
+      <DropdownMenuTrigger data-demo="sort" className="flex h-[30px] items-center gap-2 rounded-pill bg-paper pr-2.5 pl-3 text-[13px] leading-[18px] text-text-1 ring-1 ring-line-control outline-none transition-colors duration-(--dur-state) ease-out hover:bg-hover focus-visible:bg-hover data-popup-open:bg-hover">
         {SORTS.find((s) => s.key === sort)?.label}
         <Sort className="text-text-3" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" size="sm">
         {SORTS.map((s) => (
-          <DropdownMenuItem key={s.key} onClick={() => onSort(s.key)}>
+          <DropdownMenuItem key={s.key} data-demo={`sort_${s.key}`} onClick={() => onSort(s.key)}>
             <span className="flex-1">{s.label}</span>
             {s.key === sort ? <Icon icon={Check} /> : null}
           </DropdownMenuItem>
@@ -237,10 +239,10 @@ function SaveBar({ count, onDiscard, bottom }: { count: number; onDiscard: () =>
         <span className="type-label-sm whitespace-nowrap text-text-1">
           {count} unsaved {count === 1 ? "change" : "changes"}
         </span>
-        <button type="button" onClick={onDiscard} className={buttonVariants({ variant: "ghost", size: "sm" })}>
+        <button type="button" data-demo="discard" onClick={onDiscard} className={buttonVariants({ variant: "ghost", size: "sm" })}>
           Discard
         </button>
-        <button type="button" onClick={nope.trigger} className={buttonVariants({ size: "sm" })}>
+        <button type="button" data-demo="save_changes" onClick={nope.trigger} className={buttonVariants({ size: "sm" })}>
           Save changes
         </button>
       </section>
@@ -281,6 +283,7 @@ function CreateRuleDialog({ onClose, phone = false }: { onClose: () => void; pho
             <Pick label="Field" value={d.field} placeholder="field" options={FIELDS} onPick={(field) => set({ field })} />
             <Pick label="Condition" value={d.condition} placeholder="condition" options={CONDITIONS} onPick={(condition) => set({ condition })} />
             <input
+              data-demo="dialog_value"
               aria-label="Value"
               className="value-slot bg-transparent"
               placeholder="value"
@@ -298,7 +301,7 @@ function CreateRuleDialog({ onClose, phone = false }: { onClose: () => void; pho
           <button type="button" onClick={onClose} className={buttonVariants({ variant: "secondary", size: "sm" })}>
             Cancel
           </button>
-          <button type="button" disabled={!ready} onClick={nope.trigger} className={buttonVariants({ size: "sm" })}>
+          <button type="button" data-demo="dialog_create" disabled={!ready} onClick={nope.trigger} className={buttonVariants({ size: "sm" })}>
             Create rule
           </button>
         </div>
@@ -311,6 +314,7 @@ function CreateButton({ onClick, icon = false }: { onClick: () => void; icon?: b
   return (
     <button
       type="button"
+      data-demo="create_rule"
       onClick={onClick}
       className={cn("glass glass-ink flex h-8 shrink-0 items-center rounded-pill px-3.5 font-medium", icon && "gap-1.5 text-[13px] leading-[19.5px]")}
     >
@@ -362,6 +366,13 @@ function Stage({ children }: { children: ReactNode }) {
   return <div className="relative flex min-h-0 grow flex-col overflow-clip rounded-t-[12px] bg-page">{children}</div>;
 }
 
+function demoClick(surface: string) {
+  return (e: MouseEvent) => {
+    const el = (e.target as Element).closest?.("[data-demo]");
+    if (el) trackDemo(surface, el.getAttribute("data-demo") ?? "unknown");
+  };
+}
+
 export function AppWindow() {
   const rules = useRules();
   const [repo, setRepo] = useState("widgets");
@@ -374,7 +385,7 @@ export function AppWindow() {
     sort === "az" ? RULES[a].title.localeCompare(RULES[b].title) : RULES[b].matches - RULES[a].matches || ALL.indexOf(a) - ALL.indexOf(b),
   );
   return (
-    <div className="app-window relative flex h-[640px] w-full flex-col rounded-t-[16px] bg-shell px-1 select-none">
+    <div onClickCapture={demoClick("hero")} className="app-window relative flex h-[640px] w-full flex-col rounded-t-[16px] bg-shell px-1 select-none">
       <Chrome url={`tripwire.sh/acme/${repo}/rules`} />
       <Stage>
         <div className="font-system flex grow flex-col text-[14px] leading-[18px]">
@@ -396,6 +407,7 @@ export function AppWindow() {
                   <button
                     key={tab}
                     type="button"
+                    data-demo={`tab_${tab.toLowerCase()}`}
                     className="flex shrink-0 items-center border-b-2 border-transparent pt-0.5 text-text-2 outline-none transition-colors duration-(--dur-state) ease-out hover:border-line-control hover:text-text-1 focus-visible:text-text-1"
                   >
                     {tab}
@@ -455,7 +467,7 @@ export function PhoneWindow() {
   const rules = useRules();
   const [creating, setCreating] = useState(false);
   return (
-    <div className="app-window relative flex h-[520px] w-[min(330px,calc(100%-16px))] shrink-0 flex-col rounded-t-[16px] bg-shell px-1 select-none">
+    <div onClickCapture={demoClick("hero_phone")} className="app-window relative flex h-[520px] w-[min(330px,calc(100%-16px))] shrink-0 flex-col rounded-t-[16px] bg-shell px-1 select-none">
       <Chrome url="tripwire.sh/acme/widgets/rules" phone />
       <Stage>
         <div className="flex w-full flex-col gap-5 px-3.5 pt-5 pb-8">

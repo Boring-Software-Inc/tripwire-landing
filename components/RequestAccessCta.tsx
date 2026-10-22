@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { Arrow } from "@/components/landing/arrow";
 import { buttonVariants } from "@/components/glaze/ui/button-variants";
+import { trackEvent, type Placement } from "@/lib/analytics";
 import { APP, REQUEST_ACCESS } from "@/lib/content";
 import { cn } from "@/lib/glaze/utils";
 
@@ -61,6 +62,11 @@ const RESULT: Record<WaitlistMessage["status"], Phase> = {
 let phase: Phase = "idle";
 let popup: Window | null = null;
 let poll: number | null = null;
+let attempt: { placement: Placement; at: number } | null = null;
+
+function secondsOpen() {
+  return attempt ? Math.round((Date.now() - attempt.at) / 1000) : 0;
+}
 const listeners = new Set<() => void>();
 
 function setPhase(next: Phase) {
@@ -86,6 +92,7 @@ function onMessage(event: MessageEvent) {
   if (!next) return;
 
   stopPolling();
+  if (attempt) trackEvent("beta_signup_result", { placement: attempt.placement, status: data.status, seconds: secondsOpen() });
   // Leave the popup open — the app's callback page shows a confirmation and
   // lets the user close it themselves. We just reflect the result here.
   popup = null;
@@ -104,7 +111,9 @@ function subscribe(fn: () => void) {
   };
 }
 
-function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
+function handleClick(e: React.MouseEvent<HTMLAnchorElement>, placement: Placement) {
+  attempt = { placement, at: Date.now() };
+  trackEvent("beta_signup_click", { placement });
   // Let modified clicks (new tab, etc.) and no-JS fall back to the plain href.
   if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
   e.preventDefault();
@@ -126,12 +135,20 @@ function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
   // Blocked → full-page redirect WITHOUT mode=popup, so the closer treats it
   // as a full-page flow and navigates in place (not a stranded popup).
   if (!opened) {
+    trackEvent("beta_signup_popup_blocked", { placement });
     window.location.href = entryUrl;
     return;
   }
 
   popup = opened;
   setPhase("waiting");
+  window.addEventListener(
+    "pagehide",
+    () => {
+      if (phase === "waiting" && attempt) trackEvent("beta_signup_abandoned", { placement: attempt.placement, seconds: secondsOpen(), reason: "left_page" });
+    },
+    { once: true },
+  );
 
   // Detect the user closing the popup (or cancelling on GitHub) without a
   // result — reset to idle-with-note rather than stranding them "waiting".
@@ -139,7 +156,10 @@ function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
   poll = window.setInterval(() => {
     if (popup && !popup.closed) return;
     stopPolling();
-    if (phase === "waiting") setPhase("incomplete");
+    if (phase === "waiting") {
+      if (attempt) trackEvent("beta_signup_abandoned", { placement: attempt.placement, seconds: secondsOpen(), reason: "popup_closed" });
+      setPhase("incomplete");
+    }
     popup = null;
   }, 500);
 }
@@ -149,7 +169,8 @@ const NOTES: Partial<Record<Phase, string>> = {
   incomplete: "Didn't finish. You can try again.",
 };
 
-export default function RequestAccessCta({ size }: { size: "nav" | "xl" }) {
+export default function RequestAccessCta({ placement }: { placement: Placement }) {
+  const size = placement === "nav" ? "nav" : "xl";
   const current = useSyncExternalStore(subscribe, () => phase, () => "idle" as Phase);
   const sizeClass = size === "nav" ? "btn-nav" : "btn-xl";
   const arrow = size === "xl" ? <Arrow /> : null;
@@ -177,7 +198,7 @@ export default function RequestAccessCta({ size }: { size: "nav" | "xl" }) {
     <span className="relative flex flex-col items-center">
       <a
         href={REQUEST_ACCESS.href}
-        onClick={handleClick}
+        onClick={(e) => handleClick(e, placement)}
         aria-busy={current === "waiting" || undefined}
         className={cn(buttonVariants({ size: "lg" }), sizeClass, current === "waiting" && "pointer-events-none")}
       >

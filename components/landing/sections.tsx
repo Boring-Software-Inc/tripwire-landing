@@ -31,19 +31,19 @@ export function Nav() {
           <Lockup size={22} logoClass="size-[18px] lg:size-[22px]" wordClass="t-word text-text-1" />
         </Link>
         <div className="flex items-center gap-0.5 lg:gap-2">
-          <a href={APP.login} className="t-nav flex h-11 items-center px-2.5 text-text-1 lg:h-9 lg:px-3">
+          <a href={APP.login} data-track="sign_in_click" data-placement="nav" className="t-nav flex h-11 items-center px-2.5 text-text-1 lg:h-9 lg:px-3">
             <span className="link-draw">Sign in</span>
           </a>
-          <RequestAccessCta size="nav" />
+          <RequestAccessCta placement="nav" />
         </div>
       </nav>
     </Row>
   );
 }
 
-function SignInButton() {
+function SignInButton({ placement }: { placement: "hero" | "bottom" }) {
   return (
-    <a href={APP.login} className={cn(buttonVariants({ variant: "secondary", size: "lg" }), "btn-xl btn-xl-flat only-lg")}>
+    <a href={APP.login} data-track="sign_in_click" data-placement={placement} className={cn(buttonVariants({ variant: "secondary", size: "lg" }), "btn-xl btn-xl-flat only-lg")}>
       Sign in
     </a>
   );
@@ -68,8 +68,8 @@ export function Hero() {
           Tripwire checks every change request against your rules and blocks the junk before you see it.
         </p>
         <div className="flex gap-2 pt-2 lg:pt-5">
-          <RequestAccessCta size="xl" />
-          <SignInButton />
+          <RequestAccessCta placement="hero" />
+          <SignInButton placement="hero" />
         </div>
       </div>
     </Row>
@@ -282,8 +282,8 @@ export function ClosingCta() {
           Tripwire is in closed beta
         </h2>
         <div className="flex gap-2 lg:pt-2">
-          <RequestAccessCta size="xl" />
-          <SignInButton />
+          <RequestAccessCta placement="bottom" />
+          <SignInButton placement="bottom" />
         </div>
       </div>
     </Row>
