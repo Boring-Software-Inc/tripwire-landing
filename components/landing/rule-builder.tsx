@@ -7,9 +7,9 @@ import { RuleCard } from "@/components/landing/rule-card";
 import { RULES, type Rule } from "@/components/landing/rules-data";
 import { cn } from "@/lib/glaze/utils";
 
-const FIELDS = ["location", "account age", "bio", "company"];
-const CONDITIONS = ["contains", "is", "is not"];
-const SEVERITIES = ["Low", "Medium", "High"];
+export const FIELDS = ["location", "account age", "bio", "company"];
+export const CONDITIONS = ["contains", "is", "is not"];
+export const SEVERITIES = ["Low", "Medium", "High"];
 
 type Draft = { field: string | null; condition: string | null; value: string; severity: string | null };
 type Saved = { id: number; rule: Rule };
@@ -23,7 +23,7 @@ function slotClass(empty: boolean) {
   );
 }
 
-function Pick({
+export function Pick({
   value,
   placeholder,
   options,
@@ -146,6 +146,8 @@ export function RuleBuilder() {
         ))}
         <RuleCard rule={RULES.crypto} hover className="only-lg min-w-0" />
         <RuleCard rule={RULES.age} hover className="only-lg min-w-0" />
+        <RuleCard rule={RULES.crypto} phone hover className="only-sm" />
+        <RuleCard rule={RULES.age} phone hover className="only-sm" />
       </div>
     </>
   );
