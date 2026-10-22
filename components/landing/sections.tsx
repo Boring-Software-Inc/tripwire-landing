@@ -128,8 +128,7 @@ const FEATURES = [
   },
   {
     title: "You only see the maybes",
-    body: "Obvious junk is blocked on its own. The what-ifs wait for your call.",
-    narrow: "Obvious junk is blocked on its own. The unsure ones wait for your call.",
+    body: "Obvious junk is blocked on its own. The unsure ones wait for your call.",
     link: "See the queue",
     Picture: QueuePicture,
   },
@@ -139,7 +138,7 @@ function FeatureCaption({ feature, phone }: { feature: (typeof FEATURES)[number]
   return (
     <div className={cn("flex flex-col items-start", phone ? "gap-2.5 px-5 pt-6 pb-10" : "gap-3 px-5 pt-7 pb-11")}>
       <h2 className="t-feature text-text-1">{feature.title}</h2>
-      <p className="t-body max-w-[400px] text-text-2">{phone ? (feature.narrow ?? feature.body) : feature.body}</p>
+      <p className="t-body max-w-[400px] text-text-2">{feature.body}</p>
       <div className={phone ? "pt-1" : "pt-1.5"}>
         <TextLink href={APP.login}>{feature.link}</TextLink>
       </div>
