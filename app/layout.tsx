@@ -2,6 +2,7 @@ import { Databuddy } from "@databuddy/sdk/react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { geist } from "@/lib/fonts";
+import { AppLinkStitching } from "@/components/landing/app-links";
 import { DATABUDDY_CLIENT_ID } from "@/lib/analytics";
 import { SITE } from "@/lib/content";
 import "./globals.css";
@@ -55,6 +56,7 @@ export default function RootLayout({
         </a>
         {children}
         <Databuddy clientId={DATABUDDY_CLIENT_ID} trackAttributes trackOutgoingLinks trackInteractions trackWebVitals />
+        <AppLinkStitching />
       </body>
     </html>
   );
