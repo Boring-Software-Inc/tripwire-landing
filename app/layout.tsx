@@ -23,6 +23,15 @@ export const metadata: Metadata = {
     description: SITE.description,
     type: "website",
     images: [{ url: "/og.png", width: 1200, height: 630, type: "image/png" }],
+    videos: [
+      {
+        url: "https://tripwire.sh/og.mp4",
+        secureUrl: "https://tripwire.sh/og.mp4",
+        width: 1200,
+        height: 630,
+        type: "video/mp4",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
