@@ -39,6 +39,10 @@ export const metadata: Metadata = {
     description: SITE.description,
     images: ["/og.png"],
   },
+  other: {
+    "twitter:player:stream": "https://tripwire.sh/og.mp4",
+    "twitter:player:stream:content_type": "video/mp4",
+  },
 };
 
 export default function RootLayout({
