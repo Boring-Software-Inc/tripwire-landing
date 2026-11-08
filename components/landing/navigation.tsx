@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type ComponentProps } from "react";
 import Link from "next/link";
-import { Popover } from "@base-ui/react/popover";
+import { NavigationMenu } from "@base-ui/react/navigation-menu";
+import { DesktopNavigation } from "@/components/landing/desktop-navigation";
 import RequestAccessCta from "@/components/RequestAccessCta";
 import { Lockup } from "@/components/landing/logo";
 import { Row } from "@/components/landing/grid";
 import { APP } from "@/lib/content";
-import { useGlazePortal } from "@/lib/glaze/portal";
 
 const github = "https://github.com/Boring-Software-Inc/tripwire";
 const docs = `${github}#readme`;
@@ -70,10 +70,14 @@ function AccountActions() {
   );
 }
 
+function MenuLink({ onClick, ...props }: ComponentProps<"a">) {
+  return onClick ? <a onClick={onClick} {...props} /> : <NavigationMenu.Link closeOnClick {...props} />;
+}
+
 function MenuGroup({ title, items, onNavigate }: {
   title: string;
   items: MenuItem[];
-  onNavigate: () => void;
+  onNavigate?: () => void;
 }) {
   return (
     <>
@@ -81,7 +85,7 @@ function MenuGroup({ title, items, onNavigate }: {
       <ul>
         {items.map((item) => (
           <li key={item.title}>
-            <a className="lander-menu-item" href={item.href} onClick={onNavigate}>
+            <MenuLink className="lander-menu-item" href={item.href} onClick={onNavigate}>
               <span className="lander-menu-icon">
                 <Mark
                   path={item.icon}
@@ -91,7 +95,7 @@ function MenuGroup({ title, items, onNavigate }: {
                 />
               </span>
               <span className="lander-menu-copy"><strong>{item.title}</strong><small>{item.description}</small></span>
-            </a>
+            </MenuLink>
           </li>
         ))}
       </ul>
@@ -99,129 +103,82 @@ function MenuGroup({ title, items, onNavigate }: {
   );
 }
 
-function MenuDocs({ onNavigate }: { onNavigate: () => void }) {
+function MenuDocs() {
   return (
-    <a className="lander-menu-item lander-menu-docs" href={docs} onClick={onNavigate}>
+    <MenuLink className="lander-menu-item lander-menu-docs" href={docs}>
       Documentation <Mark path="M3 7h8M8 4l3 3-3 3" size={14} viewSize={14} strokeWidth={1.4} />
-    </a>
+    </MenuLink>
   );
 }
 
-function PilotLink({ href, onNavigate }: { href: string; onNavigate: () => void }) {
+function ProductsPanel({ pilot }: { pilot: string }) {
   return (
-    <a className="lander-menu-item lander-pilot-link" href={href} onClick={onNavigate}>
-      <span><strong>Tripwire Pilot</strong><small>Public GitHub spam reports, reviewed by maintainers.</small></span>
-      <Mark path="M5 12h14m-5-5 5 5-5 5" size={15} />
-    </a>
+    <div className="lander-mega-menu">
+      <section>
+        <MenuGroup title="Products" items={products} />
+        <MenuDocs />
+      </section>
+      <section>
+        <MenuGroup title="Build with Tripwire" items={developers} />
+        <MenuDocs />
+      </section>
+      <section>
+        <p className="lander-menu-label">Featured</p>
+        <MenuLink className="lander-pilot-art" href={pilot} tabIndex={-1} aria-hidden="true">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="lander-pilot-light" src="/pilot-menu-preview.png" alt="" width={812} height={558} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="lander-pilot-dark" src="/pilot-menu-preview-dark.jpg" alt="" width={812} height={558} />
+        </MenuLink>
+        <MenuLink className="lander-menu-item lander-pilot-link" href={pilot}>
+          <span><strong>Tripwire Pilot</strong><small>Public GitHub spam reports, reviewed by maintainers.</small></span>
+          <Mark path="M5 12h14m-5-5 5 5-5 5" size={15} />
+        </MenuLink>
+      </section>
+    </div>
   );
 }
 
-function ResourceLinks({ onNavigate }: { onNavigate: () => void }) {
-  return resources.map(({ title, href }) => <a key={title} href={href} onClick={onNavigate}>{title}</a>);
+function ResourceLinks({ onNavigate }: { onNavigate?: () => void }) {
+  return resources.map(({ title, href }) => <MenuLink key={title} href={href} onClick={onNavigate}>{title}</MenuLink>);
+}
+
+function ResourcesPanel() {
+  return (
+    <div className="lander-mega-menu lander-mega-resources">
+      <section aria-label="Resources">
+        <ResourceLinks />
+      </section>
+    </div>
+  );
 }
 
 export function Nav() {
-  const portal = useGlazePortal();
   const pilot = useSyncExternalStore(subscribeToHost, getPilotHref, () => configuredPilot);
-  const [menu, setMenu] = useState<"products" | "resources" | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const header = useRef<HTMLElement>(null);
-  const megaAnchor = useRef<HTMLSpanElement>(null);
   const drawer = useRef<HTMLDialogElement>(null);
   const drawerTrigger = useRef<HTMLButtonElement>(null);
   const closeButton = useRef<HTMLButtonElement>(null);
-  const resourcesTrigger = useRef<HTMLButtonElement>(null);
-  const closeMenu = () => setMenu(null);
   const closeDrawer = () => drawer.current?.close();
 
   useEffect(() => {
     const desktop = window.matchMedia("(min-width: 1024px)");
-    const syncViewport = () => {
+    const closeOnDesktop = () => {
       if (desktop.matches) drawer.current?.close();
-      else setMenu(null);
     };
-    const dismiss = (event: PointerEvent) => {
-      if (event.target instanceof Node && !header.current?.contains(event.target)) {
-        setMenu((current) => current === "resources" ? null : current);
-      }
-    };
-    desktop.addEventListener("change", syncViewport);
-    document.addEventListener("pointerdown", dismiss);
-    return () => {
-      desktop.removeEventListener("change", syncViewport);
-      document.removeEventListener("pointerdown", dismiss);
-    };
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
   }, []);
 
   return (
     <Row as="header" plain className="lander-nav-row">
-      <nav
-        ref={header}
-        aria-label="Main"
-        className="lander-nav-bar"
-        onKeyDown={(event) => {
-          if (event.key !== "Escape" || menu !== "resources") return;
-          event.stopPropagation();
-          resourcesTrigger.current?.focus();
-          closeMenu();
-        }}
-      >
+      <nav aria-label="Main" className="lander-nav-bar">
         <Brand />
-        <span ref={megaAnchor} className="lander-mega-anchor" aria-hidden="true" />
-        <div className="lander-nav-desktop">
-          <Popover.Root open={menu === "products"} onOpenChange={(open) => setMenu((current) => open ? "products" : current === "products" ? null : current)}>
-            <Popover.Trigger type="button" openOnHover delay={0} closeDelay={500}>
-              Products <Mark path="m6 9 6 6 6-6" size={12} />
-            </Popover.Trigger>
-            <Popover.Portal container={portal}>
-              <Popover.Backdrop className="lander-menu-backdrop" onClick={closeMenu} />
-              <Popover.Positioner
-                anchor={megaAnchor}
-                side="bottom"
-                sideOffset={0}
-                align="start"
-                collisionAvoidance={{ side: "none", align: "none" }}
-                className="lander-mega-positioner"
-              >
-                <Popover.Popup aria-label="Products" initialFocus={false} className="lander-mega-surface">
-                  <div className="lander-mega-clip">
-                    <div className="lander-mega-menu">
-                      <section>
-                        <MenuGroup title="Products" items={products} onNavigate={closeMenu} />
-                        <MenuDocs onNavigate={closeMenu} />
-                      </section>
-                      <section>
-                        <MenuGroup title="Build with Tripwire" items={developers} onNavigate={closeMenu} />
-                        <MenuDocs onNavigate={closeMenu} />
-                      </section>
-                      <section>
-                        <p className="lander-menu-label">Featured</p>
-                        <a className="lander-pilot-art" href={pilot} onClick={closeMenu} tabIndex={-1} aria-hidden="true">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img className="lander-pilot-light" src="/pilot-menu-preview.png" alt="" width={812} height={558} />
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img className="lander-pilot-dark" src="/pilot-menu-preview-dark.jpg" alt="" width={812} height={558} />
-                        </a>
-                        <PilotLink href={pilot} onNavigate={closeMenu} />
-                      </section>
-                    </div>
-                  </div>
-                </Popover.Popup>
-              </Popover.Positioner>
-            </Popover.Portal>
-          </Popover.Root>
-          <div className="lander-resources">
-            <button type="button" ref={resourcesTrigger} aria-expanded={menu === "resources"} aria-controls="lander-resources" onClick={() => setMenu(menu === "resources" ? null : "resources")}>
-              Resources <Mark path="m6 9 6 6 6-6" size={12} />
-            </button>
-            <div id="lander-resources" className="lander-resources-popover" hidden={menu !== "resources"}>
-              <ResourceLinks onNavigate={closeMenu} />
-            </div>
-          </div>
-          <span aria-disabled="true">Pricing</span>
-          <a href={docs}>Docs</a>
-          <span aria-disabled="true">Blog</span>
-        </div>
+        <DesktopNavigation
+          products={<ProductsPanel pilot={pilot} />}
+          resources={<ResourcesPanel />}
+          docsHref={docs}
+        />
         <div className="lander-desktop-actions"><AccountActions /></div>
         <button
           ref={drawerTrigger}
