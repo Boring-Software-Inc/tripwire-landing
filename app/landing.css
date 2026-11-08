@@ -685,7 +685,8 @@
 }
 
 .lander-menu-item > svg { flex: none; }
-.lander-menu-item > span { display: grid; gap: 3px; min-width: 0; }
+.lander-menu-item > span:not(.lander-menu-icon) { display: grid; gap: 3px; min-width: 0; }
+.lander-menu-icon { display: grid; flex: none; width: 24px; height: 24px; place-items: center; }
 .lander-menu-item strong { font-weight: 550; letter-spacing: -0.01em; }
 .lander-menu-item small { color: var(--text-2); font-size: 13px; line-height: 17px; }
 .lander-menu-item:is(:hover, :focus-visible),
@@ -829,11 +830,11 @@ html:has(.lander-mobile-drawer[open]) { overflow: hidden; }
   .lander-mega-menu {
     display: grid;
     grid-template-columns: 400fr 280fr 408fr;
-    align-items: start;
+    align-items: stretch;
     gap: 16px;
     width: var(--col);
+    min-height: min(425px, var(--available-height));
     margin-inline: auto;
-    padding-bottom: 22px;
     max-height: var(--available-height);
     overflow: auto;
     opacity: 1;
@@ -848,11 +849,20 @@ html:has(.lander-mobile-drawer[open]) { overflow: hidden; }
     .lander-mega-menu { transition: none; }
   }
 
-  .lander-mega-menu > section { min-width: 0; border-inline: 1px solid var(--grid); }
-  .lander-mega-menu .lander-menu-label { min-height: 61px; padding-inline: 23px; }
-  .lander-mega-menu .lander-menu-item { min-height: 84px; gap: 14px; padding-inline: 23px; }
+  .lander-mega-menu > section { min-width: 0; padding-block-start: 4px; border-inline: 1px solid var(--grid); }
+  .lander-mega-menu .lander-menu-label { min-height: 50px; padding-inline: 23px; }
+  .lander-mega-menu .lander-menu-item { min-height: 84px; padding-inline: 23px; }
+  .lander-mega-menu section:first-child li > .lander-menu-item { min-height: 70px; }
+  .lander-mega-menu li > .lander-menu-item {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    align-items: start;
+    align-content: center;
+    gap: 3px;
+  }
+  .lander-mega-menu .lander-menu-copy strong { display: flex; align-items: center; min-height: 24px; }
   .lander-mega-menu .lander-pilot-link { min-height: 57px; }
-  .lander-menu-docs { justify-content: space-between; }
+  .lander-mega-menu .lander-menu-docs { min-height: 46px; }
 
   .lander-resources { position: relative; }
   .lander-resources-popover:not([hidden]) {
