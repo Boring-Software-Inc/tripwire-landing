@@ -25,13 +25,15 @@ function getPilotHref() {
 function subscribeToHost() {
   return () => {};
 }
-const products = [
-  { title: "Gatekeeper", description: "Evaluate every contribution against composable rules", href: "#rules-title", icon: "M4 12h16M12 4v16" },
-  { title: "Workflows", description: "Connect rules, gates, human review, and actions", href: "#workflows", icon: "M5 6h5v5H5z M14 13h5v5h-5z M10 8h4v7" },
-  { title: "Human review", description: "Route uncertain contributions to maintainers", href: "#outcomes-title", icon: "M4 6h16v12H4z M8 10h8 M8 14h5" },
-  { title: "Runs", description: "Trace each decision, signal, and forge action", href: APP.login, icon: "M6 4h12v16H6z M9 8h6M9 12h6M9 16h4" },
+type MenuItem = { title: string; description: string; href: string; icon: string; iconViewSize?: number };
+
+const products: MenuItem[] = [
+  { title: "Gatekeeper", description: "Evaluate every contribution against composable rules", href: "#rules-title", icon: "M3.334 10h13.332M10 3.334v13.332", iconViewSize: 20 },
+  { title: "Workflows", description: "Connect rules, gates, human review, and actions", href: "#workflows", icon: "M4.166 5h4.168v4.167H4.166zM11.666 10.834h4.168v4.166h-4.168zM8.334 6.667h3.332v5.833", iconViewSize: 20 },
+  { title: "Human review", description: "Route uncertain contributions to maintainers", href: "#outcomes-title", icon: "M3.334 5h13.332v10H3.334zM6.666 8.334h6.668M6.666 11.666h4.168", iconViewSize: 20 },
+  { title: "Runs", description: "Trace each decision, signal, and forge action", href: APP.login, icon: "M5 3.334h10v13.332H5zM7.5 7.5h5M7.5 10.834h5M7.5 14.166h3.334", iconViewSize: 20 },
 ];
-const developers = [
+const developers: MenuItem[] = [
   { title: "MCP server", description: "Connect agents to Tripwire context and actions", href: "https://www.npmjs.com/package/@tripwire-sh/cli", icon: "M5 8h4l3 4 3-3h4 M5 16h4l3-4 3 3h4" },
   { title: "CLI", description: "Set up agents and manage Tripwire from the terminal", href: "https://www.npmjs.com/package/@tripwire-sh/cli", icon: "M5 7l5 5-5 5 M12 17h7" },
   { title: "TypeScript SDK", description: "Author typed workflows in your repository", href: "https://www.npmjs.com/package/@tripwire-sh/sdk", icon: "M8 5H5v14h3 M16 5h3v14h-3 M10 9l-2 3 2 3 M14 9l2 3-2 3" },
@@ -41,9 +43,9 @@ const resources = [
   { title: "Dither Kit", href: "/dither-kit" },
 ];
 
-function Mark({ path, size = 24 }: { path: string; size?: number }) {
+function Mark({ path, size = 24, viewSize = 24, strokeWidth = 1.6 }: { path: string; size?: number; viewSize?: number; strokeWidth?: number }) {
   return (
-    <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <svg aria-hidden="true" width={size} height={size} viewBox={`0 0 ${viewSize} ${viewSize}`} fill="none" stroke="currentColor" strokeWidth={strokeWidth}>
       <path d={path} />
     </svg>
   );
@@ -70,7 +72,7 @@ function AccountActions() {
 
 function MenuGroup({ title, items, onNavigate }: {
   title: string;
-  items: typeof products;
+  items: MenuItem[];
   onNavigate: () => void;
 }) {
   return (
@@ -80,13 +82,28 @@ function MenuGroup({ title, items, onNavigate }: {
         {items.map((item) => (
           <li key={item.title}>
             <a className="lander-menu-item" href={item.href} onClick={onNavigate}>
-              <Mark path={item.icon} />
-              <span><strong>{item.title}</strong><small>{item.description}</small></span>
+              <span className="lander-menu-icon">
+                <Mark
+                  path={item.icon}
+                  size={item.iconViewSize ?? 22}
+                  viewSize={item.iconViewSize}
+                  strokeWidth={item.iconViewSize ? 1.6 : 1.5}
+                />
+              </span>
+              <span className="lander-menu-copy"><strong>{item.title}</strong><small>{item.description}</small></span>
             </a>
           </li>
         ))}
       </ul>
     </>
+  );
+}
+
+function MenuDocs({ onNavigate }: { onNavigate: () => void }) {
+  return (
+    <a className="lander-menu-item lander-menu-docs" href={docs} onClick={onNavigate}>
+      Documentation <Mark path="M3 7h8M8 4l3 3-3 3" size={14} viewSize={14} strokeWidth={1.4} />
+    </a>
   );
 }
 
@@ -169,18 +186,19 @@ export function Nav() {
                 <Popover.Popup aria-label="Products" initialFocus={false} className="lander-mega-surface">
                   <div className="lander-mega-clip">
                     <div className="lander-mega-menu">
-                      <section><MenuGroup title="Products" items={products} onNavigate={closeMenu} /></section>
+                      <section>
+                        <MenuGroup title="Products" items={products} onNavigate={closeMenu} />
+                        <MenuDocs onNavigate={closeMenu} />
+                      </section>
                       <section>
                         <MenuGroup title="Build with Tripwire" items={developers} onNavigate={closeMenu} />
-                        <a className="lander-menu-item lander-menu-docs" href={docs} onClick={closeMenu}>
-                          Documentation <Mark path="M5 12h14m-5-5 5 5-5 5" size={15} />
-                        </a>
+                        <MenuDocs onNavigate={closeMenu} />
                       </section>
                       <section>
                         <p className="lander-menu-label">Featured</p>
                         <a className="lander-pilot-art" href={pilot} onClick={closeMenu} tabIndex={-1} aria-hidden="true">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src="/pilot-menu-preview.png" alt="" width={812} height={558} />
+                          <img src="/pilot-menu-preview.jpg" alt="" width={812} height={558} />
                         </a>
                         <PilotLink href={pilot} onNavigate={closeMenu} />
                       </section>
