@@ -650,13 +650,13 @@
 }
 
 .lander-nav-bar :is(button, a):focus-visible,
+.lander-mega-surface a:focus-visible,
 .lander-mobile-drawer :is(button, a, summary):focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: -2px;
 }
 
 .lander-mega-surface,
-.lander-resources-popover,
 .lander-mobile-drawer {
   color: var(--text-1);
   background: var(--paper);
@@ -690,7 +690,7 @@
 .lander-menu-item strong { font-weight: 550; letter-spacing: -0.01em; }
 .lander-menu-item small { color: var(--text-2); font-size: 13px; line-height: 17px; }
 .lander-menu-item:is(:hover, :focus-visible),
-.lander-resources-popover a:is(:hover, :focus-visible) { background: var(--shell-hover); }
+.lander-mega-resources a:is(:hover, :focus-visible) { background: var(--shell-hover); }
 
 .lander-pilot-link { justify-content: space-between; min-height: 56px; }
 .lander-pilot-art { display: block; border-bottom: 1px solid var(--grid); }
@@ -773,26 +773,30 @@ html:has(.lander-mobile-drawer[open]) { overflow: hidden; }
   .lander-nav-desktop { display: flex; align-items: stretch; height: 100%; }
   .lander-desktop-actions { display: block; }
   .lander-mobile-trigger { display: none; }
-  .lander-nav-desktop > :is(a, button, span),
-  .lander-resources > button {
+  .lander-nav-list { display: flex; align-items: stretch; height: 100%; }
+  .lander-nav-list > li > :is(a, button, [aria-disabled="true"]) {
     display: flex;
+    /* Keep sibling triggers reachable while Base UI guards the hover path into the panel. */
+    pointer-events: auto;
     align-items: center;
     gap: 8px;
+    height: 100%;
     padding-inline: 10px;
     font-size: 14px;
     line-height: 18px;
     white-space: nowrap;
   }
 
-  .lander-nav-desktop button { position: relative; height: 100%; cursor: pointer; }
-  .lander-nav-desktop button[aria-expanded="true"]::after {
+  .lander-nav-trigger { position: relative; cursor: pointer; }
+  .lander-nav-indicator {
     position: absolute;
     inset: auto 0 0;
     height: 2px;
     background: var(--brand-fire-body);
-    content: "";
+    pointer-events: none;
   }
-  .lander-nav-desktop button[aria-expanded="true"] svg { transform: rotate(180deg); }
+  .lander-nav-chevron { transition: rotate 220ms ease; }
+  .lander-nav-trigger[data-popup-open] .lander-nav-chevron { rotate: 180deg; }
 
   .lander-mega-anchor {
     position: absolute;
@@ -821,14 +825,31 @@ html:has(.lander-mobile-drawer[open]) { overflow: hidden; }
   .lander-mega-positioner { z-index: 11; width: var(--anchor-width); }
 
   .lander-mega-surface {
-    display: grid;
-    grid-template-rows: 1fr;
-    transition: grid-template-rows 500ms cubic-bezier(0.4, 0, 0.2, 1);
+    height: var(--popup-height, auto);
+    overflow: clip;
+    clip-path: inset(0);
+    transition:
+      height 380ms cubic-bezier(0.22, 1, 0.36, 1),
+      clip-path 380ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .lander-mega-surface:is([data-starting-style], [data-ending-style]) { grid-template-rows: 0fr; }
-  .lander-mega-surface[data-ending-style] { transition-duration: 300ms; }
-  .lander-mega-clip { min-height: 0; overflow: clip; }
+  .lander-mega-surface:is([data-starting-style], [data-ending-style]) {
+    clip-path: inset(0 0 100% 0);
+  }
+
+  .lander-mega-surface[data-ending-style] { transition-duration: 260ms; }
+  .lander-mega-viewport { position: relative; }
+  .lander-menu-panel {
+    width: 100%;
+    opacity: 1;
+    translate: 0;
+    transition: opacity 210ms ease, translate 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .lander-menu-panel:is([data-starting-style], [data-ending-style]) { opacity: 0; }
+  .lander-menu-panel[data-closed] { pointer-events: none; }
+  .lander-menu-panel:where([data-activation-direction="right"][data-starting-style], [data-activation-direction="left"][data-ending-style]) { translate: 40px 0; }
+  .lander-menu-panel:where([data-activation-direction="left"][data-starting-style], [data-activation-direction="right"][data-ending-style]) { translate: -40px 0; }
 
   .lander-mega-menu {
     display: grid;
@@ -840,16 +861,15 @@ html:has(.lander-mobile-drawer[open]) { overflow: hidden; }
     margin-inline: auto;
     max-height: var(--available-height);
     overflow: auto;
-    opacity: 1;
-    transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
   }
-
-  .lander-mega-surface:is([data-starting-style], [data-ending-style]) .lander-mega-menu { opacity: 0; }
 
   @media (prefers-reduced-motion: reduce) {
     .lander-menu-backdrop,
     .lander-mega-surface,
-    .lander-mega-menu { transition: none; }
+    .lander-menu-panel,
+    .lander-nav-chevron { transition: none; }
+
+    .lander-menu-panel:is([data-starting-style], [data-ending-style]) { translate: none; }
   }
 
   .lander-mega-menu > section { min-width: 0; padding-block-start: 4px; border-inline: 1px solid var(--grid); }
@@ -867,13 +887,14 @@ html:has(.lander-mobile-drawer[open]) { overflow: hidden; }
   .lander-mega-menu .lander-pilot-link { min-height: 57px; }
   .lander-mega-menu .lander-menu-docs { min-height: 46px; }
 
-  .lander-resources { position: relative; }
-  .lander-resources-popover:not([hidden]) {
-    position: absolute;
-    top: 100%;
-    inset-inline-start: 0;
-    min-width: 180px;
-    border: 1px solid var(--grid);
+  .lander-mega-resources { min-height: 0; }
+  .lander-mega-resources > section { grid-column: 2; }
+  .lander-mega-resources a {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding-inline: 23px;
+    border-bottom: 1px solid var(--grid);
+    font-size: 14px;
   }
-  .lander-resources-popover a { display: block; padding: 12px 16px; font-size: 14px; }
 }
