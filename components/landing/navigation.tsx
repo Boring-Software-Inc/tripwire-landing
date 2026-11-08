@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import RequestAccessCta from "@/components/RequestAccessCta";
 import { Lockup } from "@/components/landing/logo";
@@ -9,7 +9,20 @@ import { APP } from "@/lib/content";
 
 const github = "https://github.com/Boring-Software-Inc/tripwire";
 const docs = `${github}#readme`;
-const pilot = `${APP.home}/pilot`;
+const stagingPilot = "https://staging.tripwire.sh/pilot";
+const configuredPilot = process.env.NEXT_PUBLIC_VERCEL_ENV === "preview"
+  ? stagingPilot
+  : `${APP.home}/pilot`;
+
+function getPilotHref() {
+  return window.location.hostname === "tripwire-landing-preview-tripwire.unkey.app"
+    ? stagingPilot
+    : configuredPilot;
+}
+
+function subscribeToHost() {
+  return () => {};
+}
 const products = [
   { title: "Gatekeeper", description: "Evaluate every contribution against composable rules", href: "#rules-title", icon: "M4 12h16M12 4v16" },
   { title: "Workflows", description: "Connect rules, gates, human review, and actions", href: "#workflows", icon: "M5 6h5v5H5z M14 13h5v5h-5z M10 8h4v7" },
@@ -75,9 +88,9 @@ function MenuGroup({ title, items, onNavigate }: {
   );
 }
 
-function PilotLink({ onNavigate }: { onNavigate: () => void }) {
+function PilotLink({ href, onNavigate }: { href: string; onNavigate: () => void }) {
   return (
-    <a className="lander-menu-item lander-pilot-link" href={pilot} onClick={onNavigate}>
+    <a className="lander-menu-item lander-pilot-link" href={href} onClick={onNavigate}>
       <span><strong>Tripwire Pilot</strong><small>Public GitHub spam reports, reviewed by maintainers.</small></span>
       <Mark path="M5 12h14m-5-5 5 5-5 5" size={15} />
     </a>
@@ -89,6 +102,7 @@ function ResourceLinks({ onNavigate }: { onNavigate: () => void }) {
 }
 
 export function Nav() {
+  const pilot = useSyncExternalStore(subscribeToHost, getPilotHref, () => configuredPilot);
   const [menu, setMenu] = useState<"products" | "resources" | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const header = useRef<HTMLElement>(null);
@@ -149,7 +163,7 @@ export function Nav() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/pilot-menu-preview.png" alt="" width={812} height={558} />
               </a>
-              <PilotLink onNavigate={closeMenu} />
+              <PilotLink href={pilot} onNavigate={closeMenu} />
             </section>
           </div>
           <div className="lander-resources">
@@ -200,7 +214,7 @@ export function Nav() {
         <nav aria-label="Mobile" className="lander-drawer-links">
           <MenuGroup title="Products" items={products} onNavigate={closeDrawer} />
           <MenuGroup title="Build with Tripwire" items={developers} onNavigate={closeDrawer} />
-          <PilotLink onNavigate={closeDrawer} />
+          <PilotLink href={pilot} onNavigate={closeDrawer} />
           <div className="lander-drawer-secondary">
             <details><summary>Resources</summary><ResourceLinks onNavigate={closeDrawer} /></details>
             <span aria-disabled="true">Pricing</span>
