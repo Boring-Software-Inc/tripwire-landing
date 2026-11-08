@@ -1,0 +1,25 @@
+README.md
+  s_6e1ad5c5659a43::t_ddecd7137e737b 65-67
+app/llms.txt/route.ts
+  s_6e1ad5c5659a43::t_373a5426901fe5 1-2,16
+components/landing/navigation.tsx
+  s_6e1ad5c5659a43::t_373a5426901fe5 11,37-39,45,150,230,283
+lib/content.ts
+  s_6e1ad5c5659a43::t_ddecd7137e737b 7-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d22d1d0a867b8281012f1c2ec0e413a850283fef",
+  "prompts": {},
+  "sessions": {
+    "s_6e1ad5c5659a43": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1af78-de88-77e0-ad66-c3d9b2fc3c4e",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": null
+    }
+  }
+}
