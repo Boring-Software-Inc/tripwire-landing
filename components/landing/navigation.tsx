@@ -109,6 +109,7 @@ export function Nav() {
   const [menu, setMenu] = useState<"products" | "resources" | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const header = useRef<HTMLElement>(null);
+  const megaAnchor = useRef<HTMLSpanElement>(null);
   const drawer = useRef<HTMLDialogElement>(null);
   const drawerTrigger = useRef<HTMLButtonElement>(null);
   const closeButton = useRef<HTMLButtonElement>(null);
@@ -149,36 +150,42 @@ export function Nav() {
         }}
       >
         <Brand />
+        <span ref={megaAnchor} className="lander-mega-anchor" aria-hidden="true" />
         <div className="lander-nav-desktop">
           <Popover.Root open={menu === "products"} onOpenChange={(open) => setMenu((current) => open ? "products" : current === "products" ? null : current)}>
-            <Popover.Trigger type="button">
+            <Popover.Trigger type="button" openOnHover delay={0} closeDelay={500}>
               Products <Mark path="m6 9 6 6 6-6" size={12} />
             </Popover.Trigger>
             <Popover.Portal container={portal}>
               <Popover.Backdrop className="lander-menu-backdrop" onClick={closeMenu} />
               <Popover.Positioner
-                anchor={header}
+                anchor={megaAnchor}
                 side="bottom"
+                sideOffset={0}
                 align="start"
                 collisionAvoidance={{ side: "none", align: "none" }}
                 className="lander-mega-positioner"
               >
-                <Popover.Popup aria-label="Products" initialFocus={false} className="lander-mega-menu">
-                    <section><MenuGroup title="Products" items={products} onNavigate={closeMenu} /></section>
-                    <section>
-                      <MenuGroup title="Build with Tripwire" items={developers} onNavigate={closeMenu} />
-                      <a className="lander-menu-item lander-menu-docs" href={docs} onClick={closeMenu}>
-                        Documentation <Mark path="M5 12h14m-5-5 5 5-5 5" size={15} />
-                      </a>
-                    </section>
-                    <section>
-                      <p className="lander-menu-label">Featured</p>
-                      <a className="lander-pilot-art" href={pilot} onClick={closeMenu} tabIndex={-1} aria-hidden="true">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src="/pilot-menu-preview.png" alt="" width={812} height={558} />
-                      </a>
-                      <PilotLink href={pilot} onNavigate={closeMenu} />
-                    </section>
+                <Popover.Popup aria-label="Products" initialFocus={false} className="lander-mega-surface">
+                  <div className="lander-mega-clip">
+                    <div className="lander-mega-menu">
+                      <section><MenuGroup title="Products" items={products} onNavigate={closeMenu} /></section>
+                      <section>
+                        <MenuGroup title="Build with Tripwire" items={developers} onNavigate={closeMenu} />
+                        <a className="lander-menu-item lander-menu-docs" href={docs} onClick={closeMenu}>
+                          Documentation <Mark path="M5 12h14m-5-5 5 5-5 5" size={15} />
+                        </a>
+                      </section>
+                      <section>
+                        <p className="lander-menu-label">Featured</p>
+                        <a className="lander-pilot-art" href={pilot} onClick={closeMenu} tabIndex={-1} aria-hidden="true">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src="/pilot-menu-preview.png" alt="" width={812} height={558} />
+                        </a>
+                        <PilotLink href={pilot} onNavigate={closeMenu} />
+                      </section>
+                    </div>
+                  </div>
                 </Popover.Popup>
               </Popover.Positioner>
             </Popover.Portal>

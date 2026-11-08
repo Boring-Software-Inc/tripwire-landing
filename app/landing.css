@@ -637,7 +637,7 @@
 
 .lander-nav-bar { padding-inline: 0; }
 .lander-nav-actions { gap: 8px; }
-.lander-nav-desktop, .lander-desktop-actions { display: none; }
+.lander-nav-desktop, .lander-desktop-actions, .lander-mega-anchor { display: none; }
 
 .lander-mobile-trigger {
   display: grid;
@@ -655,7 +655,7 @@
   outline-offset: -2px;
 }
 
-.lander-mega-menu,
+.lander-mega-surface,
 .lander-resources-popover,
 .lander-mobile-drawer {
   color: var(--text-1);
@@ -791,24 +791,62 @@ html:has(.lander-mobile-drawer[open]) { overflow: hidden; }
   }
   .lander-nav-desktop button[aria-expanded="true"] svg { transform: rotate(180deg); }
 
+  .lander-mega-anchor {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-start: 50%;
+    display: block;
+    inline-size: 100dvw;
+    block-size: 0;
+    translate: -50% 0;
+    pointer-events: none;
+  }
+
   .lander-menu-backdrop {
     position: fixed;
     inset: 72px 0 0;
     z-index: 9;
     background: var(--scrim);
+    opacity: 1;
+    transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  .lander-menu-backdrop[data-open] { pointer-events: auto !important; }
+  .lander-menu-backdrop:is([data-starting-style], [data-ending-style]) { opacity: 0; }
+  .lander-menu-backdrop[data-ending-style] { transition-delay: 100ms; }
+
   .lander-mega-positioner { z-index: 11; width: var(--anchor-width); }
+
+  .lander-mega-surface {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .lander-mega-surface:is([data-starting-style], [data-ending-style]) { grid-template-rows: 0fr; }
+  .lander-mega-surface[data-ending-style] { transition-duration: 300ms; }
+  .lander-mega-clip { min-height: 0; overflow: clip; }
 
   .lander-mega-menu {
     display: grid;
     grid-template-columns: 400fr 280fr 408fr;
     align-items: start;
     gap: 16px;
+    width: var(--col);
+    margin-inline: auto;
     padding-bottom: 22px;
-    border-block: 1px solid var(--grid);
     max-height: var(--available-height);
     overflow: auto;
+    opacity: 1;
+    transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .lander-mega-surface:is([data-starting-style], [data-ending-style]) .lander-mega-menu { opacity: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lander-menu-backdrop,
+    .lander-mega-surface,
+    .lander-mega-menu { transition: none; }
   }
 
   .lander-mega-menu > section { min-width: 0; border-inline: 1px solid var(--grid); }
