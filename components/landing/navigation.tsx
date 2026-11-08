@@ -198,7 +198,9 @@ export function Nav() {
                         <p className="lander-menu-label">Featured</p>
                         <a className="lander-pilot-art" href={pilot} onClick={closeMenu} tabIndex={-1} aria-hidden="true">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src="/pilot-menu-preview.jpg" alt="" width={812} height={558} />
+                          <img className="lander-pilot-light" src="/pilot-menu-preview.png" alt="" width={812} height={558} />
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img className="lander-pilot-dark" src="/pilot-menu-preview-dark.jpg" alt="" width={812} height={558} />
                         </a>
                         <PilotLink href={pilot} onNavigate={closeMenu} />
                       </section>
