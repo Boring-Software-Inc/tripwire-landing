@@ -735,8 +735,7 @@ html:has(.lander-mobile-drawer[open]) { overflow: hidden; }
 
 .lander-drawer-links .lander-menu-item small { display: none; }
 .lander-drawer-links .lander-menu-label { border: 0; }
-.lander-drawer-links ul + .lander-menu-label,
-.lander-drawer-links .lander-pilot-link { margin-block-start: 16px; }
+.lander-drawer-links ul + .lander-menu-label { margin-block-start: 16px; }
 
 .lander-drawer-secondary {
   display: flex;

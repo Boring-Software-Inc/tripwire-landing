@@ -236,9 +236,20 @@ export function Nav() {
           </button>
         </div>
         <nav aria-label="Mobile" className="lander-drawer-links">
-          <MenuGroup title="Products" items={products} onNavigate={closeDrawer} />
+          <MenuGroup
+            title="Products"
+            items={[
+              ...products,
+              {
+                title: "Tripwire Pilot",
+                description: "Public GitHub spam reports, reviewed by maintainers.",
+                href: pilot,
+                icon: "M12 3l7 3v5c0 4-2.8 7.4-7 10-4.2-2.6-7-6-7-10V6l7-3z M9 12l2 2 4-4",
+              },
+            ]}
+            onNavigate={closeDrawer}
+          />
           <MenuGroup title="Build with Tripwire" items={developers} onNavigate={closeDrawer} />
-          <PilotLink href={pilot} onNavigate={closeDrawer} />
           <div className="lander-drawer-secondary">
             <details><summary>Resources</summary><ResourceLinks onNavigate={closeDrawer} /></details>
             <span aria-disabled="true">Pricing</span>
