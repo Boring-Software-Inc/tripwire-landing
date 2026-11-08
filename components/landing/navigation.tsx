@@ -100,7 +100,7 @@ function MenuLink({ onClick, children, fire, ...props }: ComponentProps<"a"> & {
       {children}
       {fire && (
         <span className="lander-menu-item-fire" aria-hidden="true">
-          <AsciiFire side="l" height={42} seed={9} peaks={MENU_FIRE_PEAKS} embers={0} animated={false} />
+          <AsciiFire side="l" height={42} seed={9} peaks={MENU_FIRE_PEAKS} embers={0} animateOnHover />
         </span>
       )}
     </NavigationMenu.Link>
