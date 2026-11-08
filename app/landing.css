@@ -723,7 +723,20 @@ html:has(.lander-mobile-drawer[open]) { overflow: hidden; }
   padding-inline: 16px;
 }
 
-.lander-drawer-links .lander-pilot-link { border-inline-start: 2px solid var(--brand-fire-body); }
+@media (max-width: 1023px) {
+  .lander .col { border-inline: 0; }
+  .lander .plus { display: none; }
+}
+
+.lander-drawer-links .lander-menu-item {
+  min-height: 46px;
+  border-bottom: 0;
+}
+
+.lander-drawer-links .lander-menu-item small { display: none; }
+.lander-drawer-links ul + .lander-menu-label,
+.lander-drawer-links .lander-pilot-link { border-top: 1px solid var(--grid); }
+.lander-drawer-links .lander-pilot-link { min-height: 48px; border-bottom: 1px solid var(--grid); }
 
 .lander-drawer-secondary {
   display: flex;
@@ -778,16 +791,24 @@ html:has(.lander-mobile-drawer[open]) { overflow: hidden; }
   }
   .lander-nav-desktop button[aria-expanded="true"] svg { transform: rotate(180deg); }
 
-  .lander-mega-menu:not([hidden]) {
-    position: absolute;
-    inset: 100% 0 auto;
-    z-index: 1;
+  .lander-menu-backdrop {
+    position: fixed;
+    inset: 72px 0 0;
+    z-index: 9;
+    background: var(--scrim);
+  }
+
+  .lander-mega-positioner { z-index: 11; width: var(--anchor-width); }
+
+  .lander-mega-menu {
     display: grid;
     grid-template-columns: 400fr 280fr 408fr;
     align-items: start;
     gap: 16px;
     padding-bottom: 22px;
-    border-top: 1px solid var(--grid);
+    border-block: 1px solid var(--grid);
+    max-height: var(--available-height);
+    overflow: auto;
   }
 
   .lander-mega-menu > section { min-width: 0; border-inline: 1px solid var(--grid); }
