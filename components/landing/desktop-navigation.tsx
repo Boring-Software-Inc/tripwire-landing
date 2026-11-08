@@ -3,12 +3,9 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { NavigationMenu } from "@base-ui/react/navigation-menu";
 import { LayoutGroup, motion, useReducedMotion } from "motion/react";
-import { AsciiFire, type Peak } from "@/components/landing/ascii-fire";
 import { useGlazePortal } from "@/lib/glaze/portal";
 
 type MenuValue = "products" | "resources";
-
-const MENU_FIRE_PEAKS: readonly Peak[] = [[36, 0.66, 5], [27, 0.33, 5]];
 
 function DesktopMenuItem({ value, label, active, children }: {
   value: MenuValue;
@@ -95,10 +92,6 @@ export function DesktopNavigation({ products, resources, docsHref }: {
           className="lander-mega-positioner"
         >
           <NavigationMenu.Popup aria-label="Main menu links" className="lander-mega-surface">
-            <div className="lander-menu-fire" aria-hidden="true">
-              <AsciiFire side="l" height={112} seed={4} peaks={MENU_FIRE_PEAKS} embers={0} animated={false} />
-              <AsciiFire side="r" height={112} seed={9} peaks={MENU_FIRE_PEAKS} embers={0} animated={false} />
-            </div>
             <NavigationMenu.Viewport className="lander-mega-viewport" />
           </NavigationMenu.Popup>
         </NavigationMenu.Positioner>

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore, type ComponentProps } from "react";
 import Link from "next/link";
 import { NavigationMenu } from "@base-ui/react/navigation-menu";
+import { AsciiFire, type Peak } from "@/components/landing/ascii-fire";
 import { DesktopNavigation } from "@/components/landing/desktop-navigation";
 import RequestAccessCta from "@/components/RequestAccessCta";
 import { Lockup } from "@/components/landing/logo";
@@ -25,7 +26,7 @@ function getPilotHref() {
 function subscribeToHost() {
   return () => {};
 }
-type MenuItem = { title: string; description: string; href: string; icon: string; iconViewSize?: number };
+type MenuItem = { title: string; description: string; href?: string; icon: string; iconViewSize?: number };
 
 const products: MenuItem[] = [
   { title: "Gatekeeper", description: "Evaluate every contribution against composable rules", href: "#rules-title", icon: "M3.334 10h13.332M10 3.334v13.332", iconViewSize: 20 },
@@ -38,14 +39,31 @@ const developers: MenuItem[] = [
   { title: "CLI", description: "Set up agents and manage Tripwire from the terminal", href: "https://www.npmjs.com/package/@tripwire-sh/cli", icon: "M5 7l5 5-5 5 M12 17h7" },
   { title: "TypeScript SDK", description: "Author typed workflows in your repository", href: "https://www.npmjs.com/package/@tripwire-sh/sdk", icon: "M8 5H5v14h3 M16 5h3v14h-3 M10 9l-2 3 2 3 M14 9l2 3-2 3" },
 ];
-const resources = [
-  { title: "GitHub", href: github },
-  { title: "Dither Kit", href: "/dither-kit" },
-  { title: "Docs", href: docs },
-  { title: "Changelog" },
-  { title: "Status" },
-  { title: "Discord" },
+const resourceGroups: { title: string; items: MenuItem[] }[] = [
+  {
+    title: "Learn",
+    items: [
+      { title: "Docs", description: "Get started with Tripwire.", href: docs, icon: "M4 4h7a3 3 0 0 1 3 3v13a3 3 0 0 0-3-3H4zM14 7a3 3 0 0 1 3-3h3v13h-3a3 3 0 0 0-3 3" },
+      { title: "Dither Kit", description: "Explore our dithering tools.", href: "/dither-kit", icon: "M4 4h16v16H4zM8 8h1m3 0h1m3 0h1M8 12h1m3 0h1m3 0h1M8 16h1m3 0h1m3 0h1" },
+    ],
+  },
+  {
+    title: "Project",
+    items: [
+      { title: "Changelog", description: "See what shipped.", icon: "M6 4h12v16H6zM9 8h6m-6 4h6m-6 4h4" },
+      { title: "Status", description: "Check service availability.", icon: "M3 12h4l3-6 4 12 3-6h4" },
+    ],
+  },
+  {
+    title: "Community",
+    items: [
+      { title: "GitHub", description: "Browse the source and issues.", href: github, icon: "M8 6l-5 6 5 6m8-12 5 6-5 6m-3-14-2 16" },
+      { title: "Discord", description: "Chat with the Tripwire community.", icon: "M4 5h16v11H9l-5 4zM8 10h1m3 0h1m3 0h1" },
+    ],
+  },
 ];
+
+const MENU_FIRE_PEAKS: readonly Peak[] = [[38, 0.76, 6], [28, 0.44, 5]];
 
 function Mark({ path, size = 24, viewSize = 24, strokeWidth = 1.6 }: { path: string; size?: number; viewSize?: number; strokeWidth?: number }) {
   return (
@@ -74,8 +92,19 @@ function AccountActions() {
   );
 }
 
-function MenuLink({ onClick, ...props }: ComponentProps<"a">) {
-  return onClick ? <a onClick={onClick} {...props} /> : <NavigationMenu.Link closeOnClick {...props} />;
+function MenuLink({ onClick, children, fire, ...props }: ComponentProps<"a"> & { fire?: boolean }) {
+  if (onClick) return <a onClick={onClick} {...props}>{children}</a>;
+
+  return (
+    <NavigationMenu.Link closeOnClick {...props}>
+      {children}
+      {fire && (
+        <span className="lander-menu-item-fire" aria-hidden="true">
+          <AsciiFire side="l" height={42} seed={9} peaks={MENU_FIRE_PEAKS} embers={0} animated={false} />
+        </span>
+      )}
+    </NavigationMenu.Link>
+  );
 }
 
 function MenuGroup({ title, items, onNavigate }: {
@@ -87,9 +116,9 @@ function MenuGroup({ title, items, onNavigate }: {
     <>
       <p className="lander-menu-label">{title}</p>
       <ul>
-        {items.map((item) => (
-          <li key={item.title}>
-            <MenuLink className="lander-menu-item" href={item.href} onClick={onNavigate}>
+        {items.map((item) => {
+          const copy = (
+            <>
               <span className="lander-menu-icon">
                 <Mark
                   path={item.icon}
@@ -99,9 +128,19 @@ function MenuGroup({ title, items, onNavigate }: {
                 />
               </span>
               <span className="lander-menu-copy"><strong>{item.title}</strong><small>{item.description}</small></span>
-            </MenuLink>
-          </li>
-        ))}
+            </>
+          );
+
+          return (
+            <li key={item.title}>
+              {item.href ? (
+                <MenuLink className="lander-menu-item" href={item.href} onClick={onNavigate} fire>{copy}</MenuLink>
+              ) : (
+                <span className="lander-menu-item" aria-disabled="true">{copy}</span>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </>
   );
@@ -109,7 +148,7 @@ function MenuGroup({ title, items, onNavigate }: {
 
 function MenuDocs() {
   return (
-    <MenuLink className="lander-menu-item lander-menu-docs" href={docs}>
+    <MenuLink className="lander-menu-item lander-menu-docs" href={docs} fire>
       Documentation <Mark path="M3 7h8M8 4l3 3-3 3" size={14} viewSize={14} strokeWidth={1.4} />
     </MenuLink>
   );
@@ -134,7 +173,7 @@ function ProductsPanel({ pilot }: { pilot: string }) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className="lander-pilot-dark" src="/pilot-menu-preview-dark.jpg" alt="" width={812} height={558} />
         </MenuLink>
-        <MenuLink className="lander-menu-item lander-pilot-link" href={pilot}>
+        <MenuLink className="lander-menu-item lander-pilot-link" href={pilot} fire>
           <span><strong>Tripwire Pilot</strong><small>Public GitHub spam reports, reviewed by maintainers.</small></span>
           <Mark path="M5 12h14m-5-5 5 5-5 5" size={15} />
         </MenuLink>
@@ -144,7 +183,7 @@ function ProductsPanel({ pilot }: { pilot: string }) {
 }
 
 function ResourceLinks({ onNavigate }: { onNavigate?: () => void }) {
-  return resources.map(({ title, href }) =>
+  return resourceGroups.flatMap(({ items }) => items).map(({ title, href }) =>
     href ? (
       <MenuLink key={title} href={href} onClick={onNavigate}>{title}</MenuLink>
     ) : (
@@ -156,9 +195,11 @@ function ResourceLinks({ onNavigate }: { onNavigate?: () => void }) {
 function ResourcesPanel() {
   return (
     <div className="lander-mega-menu lander-mega-resources">
-      <section aria-label="Resources">
-        <ResourceLinks />
-      </section>
+      {resourceGroups.map(({ title, items }) => (
+        <section key={title}>
+          <MenuGroup title={title} items={items} />
+        </section>
+      ))}
     </div>
   );
 }
