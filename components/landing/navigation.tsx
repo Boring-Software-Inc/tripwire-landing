@@ -241,7 +241,7 @@ export function Nav() {
             items={[
               ...products,
               {
-                title: "Tripwire Pilot",
+                title: "Pilot",
                 description: "Public GitHub spam reports, reviewed by maintainers.",
                 href: pilot,
                 icon: "M12 3l7 3v5c0 4-2.8 7.4-7 10-4.2-2.6-7-6-7-10V6l7-3z M9 12l2 2 4-4",
