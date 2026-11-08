@@ -2,7 +2,8 @@
   --grid: color-mix(in srgb, var(--ink) 8%, transparent);
   --grid-mark: color-mix(in srgb, var(--ink) 28%, transparent);
   --shell-hover: color-mix(in srgb, var(--shell), var(--ink) 4%);
-  --nav-hover: color-mix(in srgb, var(--paper), var(--ink) 8%);
+  --nav-surface: var(--page);
+  --nav-hover: color-mix(in srgb, var(--nav-surface), var(--ink) 8%);
   --col: min(1120px, 100% - 32px);
   --fire-hot: #e8461c;
   --fire-body: #f97316;
@@ -621,6 +622,9 @@
 
 .lander-nav-row { z-index: 10; }
 
+.lander-nav-row,
+.lander-mega-surface { background-color: var(--nav-surface); }
+
 .lander-nav-bar,
 .lander-drawer-header,
 .lander-nav-actions {
@@ -658,10 +662,9 @@
 }
 
 .lander-mega-surface,
-.lander-mobile-drawer {
-  color: var(--text-1);
-  background: var(--paper);
-}
+.lander-mobile-drawer { color: var(--text-1); }
+
+.lander-mobile-drawer { background: var(--paper); }
 
 .lander-menu-label {
   display: flex;
