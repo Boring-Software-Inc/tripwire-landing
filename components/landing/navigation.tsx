@@ -188,7 +188,7 @@ export function Nav() {
         aria-label="Main menu"
         onClose={() => {
           setDrawerOpen(false);
-          if (!window.matchMedia("(min-width: 1024px)").matches) drawerTrigger.current?.focus();
+          if (!window.matchMedia("(min-width: 1024px)").matches) drawerTrigger.current?.focus({ preventScroll: true });
         }}
       >
         <div className="lander-drawer-header">
