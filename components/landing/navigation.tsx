@@ -8,10 +8,9 @@ import { DesktopNavigation } from "@/components/landing/desktop-navigation";
 import RequestAccessCta from "@/components/RequestAccessCta";
 import { Lockup } from "@/components/landing/logo";
 import { Row } from "@/components/landing/grid";
-import { APP } from "@/lib/content";
+import { APP, DOCS_URL } from "@/lib/content";
 
 const github = "https://github.com/Boring-Software-Inc/tripwire";
-const docs = `${github}#readme`;
 const stagingPilot = "https://staging.tripwire.sh/pilot";
 const configuredPilot = process.env.NEXT_PUBLIC_VERCEL_ENV === "preview"
   ? stagingPilot
@@ -35,15 +34,15 @@ const products: MenuItem[] = [
   { title: "Runs", description: "Trace each decision, signal, and forge action", href: APP.login, icon: "M5 3.334h10v13.332H5zM7.5 7.5h5M7.5 10.834h5M7.5 14.166h3.334", iconViewSize: 20 },
 ];
 const developers: MenuItem[] = [
-  { title: "MCP server", description: "Connect agents to Tripwire context and actions", href: "https://www.npmjs.com/package/@tripwire-sh/cli", icon: "M5 8h4l3 4 3-3h4 M5 16h4l3-4 3 3h4" },
-  { title: "CLI", description: "Set up agents and manage Tripwire from the terminal", href: "https://www.npmjs.com/package/@tripwire-sh/cli", icon: "M5 7l5 5-5 5 M12 17h7" },
-  { title: "TypeScript SDK", description: "Author typed workflows in your repository", href: "https://www.npmjs.com/package/@tripwire-sh/sdk", icon: "M8 5H5v14h3 M16 5h3v14h-3 M10 9l-2 3 2 3 M14 9l2 3-2 3" },
+  { title: "MCP server", description: "Connect agents to Tripwire context and actions", href: `${DOCS_URL}/ai-tools`, icon: "M5 8h4l3 4 3-3h4 M5 16h4l3-4 3 3h4" },
+  { title: "CLI", description: "Set up agents and manage Tripwire from the terminal", href: `${DOCS_URL}/cli`, icon: "M5 7l5 5-5 5 M12 17h7" },
+  { title: "TypeScript SDK", description: "Author typed workflows in your repository", href: `${DOCS_URL}/typescript-sdk`, icon: "M8 5H5v14h3 M16 5h3v14h-3 M10 9l-2 3 2 3 M14 9l2 3-2 3" },
 ];
 const resourceGroups: { title: string; items: MenuItem[] }[] = [
   {
     title: "Learn",
     items: [
-      { title: "Docs", description: "Get started with Tripwire.", href: docs, icon: "M4 4h7a3 3 0 0 1 3 3v13a3 3 0 0 0-3-3H4zM14 7a3 3 0 0 1 3-3h3v13h-3a3 3 0 0 0-3 3" },
+      { title: "Docs", description: "Get started with Tripwire.", href: DOCS_URL, icon: "M4 4h7a3 3 0 0 1 3 3v13a3 3 0 0 0-3-3H4zM14 7a3 3 0 0 1 3-3h3v13h-3a3 3 0 0 0-3 3" },
       { title: "Dither Kit", description: "Explore our dithering tools.", href: "/dither-kit", icon: "M4 4h16v16H4zM8 8h1m3 0h1m3 0h1M8 12h1m3 0h1m3 0h1M8 16h1m3 0h1m3 0h1" },
     ],
   },
@@ -148,7 +147,7 @@ function MenuGroup({ title, items, onNavigate }: {
 
 function MenuDocs() {
   return (
-    <MenuLink className="lander-menu-item lander-menu-docs" href={docs} fire>
+    <MenuLink className="lander-menu-item lander-menu-docs" href={DOCS_URL} fire>
       Documentation <Mark path="M3 7h8M8 4l3 3-3 3" size={14} viewSize={14} strokeWidth={1.4} />
     </MenuLink>
   );
@@ -228,7 +227,7 @@ export function Nav() {
         <DesktopNavigation
           products={<ProductsPanel pilot={pilot} />}
           resources={<ResourcesPanel />}
-          docsHref={docs}
+          docsHref={DOCS_URL}
         />
         <div className="lander-desktop-actions"><AccountActions /></div>
         <button
@@ -281,8 +280,7 @@ export function Nav() {
           <div className="lander-drawer-secondary">
             <details><summary>Resources</summary><ResourceLinks onNavigate={closeDrawer} /></details>
             <span aria-disabled="true">Pricing</span>
-            <a href={docs} onClick={closeDrawer}>Docs</a>
-            <span aria-disabled="true">Blog</span>
+            <a href={DOCS_URL} onClick={closeDrawer}>Docs</a>
           </div>
         </nav>
         <div className="lander-drawer-footer"><AccountActions /></div>

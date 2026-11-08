@@ -1,3 +1,5 @@
+import { DOCS_URL } from "@/lib/content";
+
 /*
  * /llms.txt — the llms.txt convention (llmstxt.org): a short, link-first index
  * that points AI agents at the plain-markdown docs and the machine-readable
@@ -11,6 +13,7 @@ const LLMS = `# Tripwire
 
 ## Docs
 
+- [Tripwire documentation](${DOCS_URL}/llms.txt): Setup, rules, workflows, and developer tools.
 - [dither-kit](https://tripwire.sh/dither-kit.md): Composable, dithered charts (area, bar, line, pie, radar) plus generative avatars, buttons, and gradient washes for shadcn/ui. Full API, install commands, and prop tables in markdown.
 
 ## Registry
