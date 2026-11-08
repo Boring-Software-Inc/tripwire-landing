@@ -78,7 +78,6 @@ export function DesktopNavigation({ products, resources, docsHref }: {
           </DesktopMenuItem>
           <NavigationMenu.Item><span aria-disabled="true">Pricing</span></NavigationMenu.Item>
           <NavigationMenu.Item><NavigationMenu.Link href={docsHref} closeOnClick>Docs</NavigationMenu.Link></NavigationMenu.Item>
-          <NavigationMenu.Item><span aria-disabled="true">Blog</span></NavigationMenu.Item>
         </NavigationMenu.List>
       </LayoutGroup>
       <NavigationMenu.Portal container={portal}>

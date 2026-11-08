@@ -4,6 +4,8 @@ export const SITE = {
   description: "Trigger workflows from contributor activity. Filter out the noise.",
 };
 
+export const DOCS_URL = "https://tripwire-docs-tripwire.unkey.app";
+
 /*
  * The waitlist flow runs entirely on the app domain — GitHub sign-in happens
  * there and this site makes no API calls, it only opens the app in a popup and
