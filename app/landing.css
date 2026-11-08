@@ -695,6 +695,9 @@
 .lander-pilot-link { justify-content: space-between; min-height: 56px; }
 .lander-pilot-art { display: block; border-bottom: 1px solid var(--grid); }
 .lander-pilot-art img { display: block; width: 100%; height: auto; }
+.lander-pilot-art .lander-pilot-dark,
+.lander[data-theme="dark"] .lander-pilot-art .lander-pilot-light { display: none; }
+.lander[data-theme="dark"] .lander-pilot-art .lander-pilot-dark { display: block; }
 
 .lander-mobile-drawer[open] {
   position: fixed;
