@@ -41,6 +41,10 @@ const developers: MenuItem[] = [
 const resources = [
   { title: "GitHub", href: github },
   { title: "Dither Kit", href: "/dither-kit" },
+  { title: "Docs", href: docs },
+  { title: "Changelog" },
+  { title: "Status" },
+  { title: "Discord" },
 ];
 
 function Mark({ path, size = 24, viewSize = 24, strokeWidth = 1.6 }: { path: string; size?: number; viewSize?: number; strokeWidth?: number }) {
@@ -140,7 +144,13 @@ function ProductsPanel({ pilot }: { pilot: string }) {
 }
 
 function ResourceLinks({ onNavigate }: { onNavigate?: () => void }) {
-  return resources.map(({ title, href }) => <MenuLink key={title} href={href} onClick={onNavigate}>{title}</MenuLink>);
+  return resources.map(({ title, href }) =>
+    href ? (
+      <MenuLink key={title} href={href} onClick={onNavigate}>{title}</MenuLink>
+    ) : (
+      <span key={title} aria-disabled="true">{title}</span>
+    ),
+  );
 }
 
 function ResourcesPanel() {

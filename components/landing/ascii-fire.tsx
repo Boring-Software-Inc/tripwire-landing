@@ -30,8 +30,10 @@ export function AsciiFire({
   peaks,
   embers,
   compact = false,
+  animated = true,
 }: {
   compact?: boolean;
+  animated?: boolean;
   side: "l" | "r";
   height: number;
   seed: number;
@@ -250,7 +252,7 @@ export function AsciiFire({
       timer = 0;
     };
     const run = () => {
-      if (timer || !ready || reduced || !visible || document.hidden) return;
+      if (timer || !ready || !animated || reduced || !visible || document.hidden) return;
       timer = window.setInterval(tick, FRAME_MS);
     };
     const start = () => {
@@ -298,7 +300,7 @@ export function AsciiFire({
       mo.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [side, height, seed, peaks, embers]);
+  }, [side, height, seed, peaks, embers, animated]);
 
   return <canvas ref={ref} aria-hidden className={cn("fire", compact && "fire-compact", side === "l" ? "fire-l" : "fire-r")} style={{ height }} />;
 }
