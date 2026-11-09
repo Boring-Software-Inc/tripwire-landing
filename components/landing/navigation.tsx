@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore, type ComponentProps } from "react";
+import { useEffect, useRef, useState, type ComponentProps } from "react";
 import Link from "next/link";
 import { NavigationMenu } from "@base-ui/react/navigation-menu";
 import { AsciiFire, type Peak } from "@/components/landing/ascii-fire";
@@ -11,20 +11,6 @@ import { Row } from "@/components/landing/grid";
 import { APP, DOCS_URL } from "@/lib/content";
 
 const github = "https://github.com/Boring-Software-Inc/tripwire";
-const stagingPilot = "https://staging.tripwire.sh/pilot";
-const configuredPilot = process.env.NEXT_PUBLIC_VERCEL_ENV === "preview"
-  ? stagingPilot
-  : `${APP.home}/pilot`;
-
-function getPilotHref() {
-  return window.location.hostname === "tripwire-landing-preview-tripwire.unkey.app"
-    ? stagingPilot
-    : configuredPilot;
-}
-
-function subscribeToHost() {
-  return () => {};
-}
 type MenuItem = { title: string; description: string; href?: string; icon: string; iconViewSize?: number };
 
 const products: MenuItem[] = [
@@ -153,7 +139,7 @@ function MenuDocs() {
   );
 }
 
-function ProductsPanel({ pilot }: { pilot: string }) {
+function ProductsPanel() {
   return (
     <div className="lander-mega-menu">
       <section>
@@ -166,13 +152,13 @@ function ProductsPanel({ pilot }: { pilot: string }) {
       </section>
       <section>
         <p className="lander-menu-label">Featured</p>
-        <MenuLink className="lander-pilot-art" href={pilot} tabIndex={-1} aria-hidden="true">
+        <MenuLink className="lander-pilot-art" href="/pilot" tabIndex={-1} aria-hidden="true">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className="lander-pilot-light" src="/pilot-menu-preview.png" alt="" width={812} height={558} />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className="lander-pilot-dark" src="/pilot-menu-preview-dark.jpg" alt="" width={812} height={558} />
         </MenuLink>
-        <MenuLink className="lander-menu-item lander-pilot-link" href={pilot} fire>
+        <MenuLink className="lander-menu-item lander-pilot-link" href="/pilot" fire>
           <span><strong>Tripwire Pilot</strong><small>Public GitHub spam reports, reviewed by maintainers.</small></span>
           <Mark path="M5 12h14m-5-5 5 5-5 5" size={15} />
         </MenuLink>
@@ -204,7 +190,6 @@ function ResourcesPanel() {
 }
 
 export function Nav() {
-  const pilot = useSyncExternalStore(subscribeToHost, getPilotHref, () => configuredPilot);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawer = useRef<HTMLDialogElement>(null);
   const drawerTrigger = useRef<HTMLButtonElement>(null);
@@ -225,7 +210,7 @@ export function Nav() {
       <nav aria-label="Main" className="lander-nav-bar">
         <Brand />
         <DesktopNavigation
-          products={<ProductsPanel pilot={pilot} />}
+          products={<ProductsPanel />}
           resources={<ResourcesPanel />}
           docsHref={DOCS_URL}
         />
@@ -270,7 +255,7 @@ export function Nav() {
               {
                 title: "Pilot",
                 description: "Public GitHub spam reports, reviewed by maintainers.",
-                href: pilot,
+                href: "/pilot",
                 icon: "M12 3l7 3v5c0 4-2.8 7.4-7 10-4.2-2.6-7-6-7-10V6l7-3z M9 12l2 2 4-4",
               },
             ]}

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import RequestAccessCta from "@/components/RequestAccessCta";
 import { buttonVariants } from "@/components/glaze/ui/button-variants";
