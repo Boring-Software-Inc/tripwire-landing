@@ -64,4 +64,4 @@ These three gaps in the frame were resolved deliberately, with sign-off — the 
 
 App/login, pricing, blog, real waitlist provider, analytics (mount point is commented in `app/layout.tsx`), CMS.
 
-The [Tripwire docs](https://tripwire-docs-tripwire.unkey.app) are maintained separately. The landing navigation and agent index share the docs origin in `lib/content.ts`.
+The [Tripwire docs](https://docs.tripwire.sh) are maintained separately. The landing navigation and agent index share the docs origin in `lib/content.ts`.
