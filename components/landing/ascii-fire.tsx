@@ -30,8 +30,10 @@ export function AsciiFire({
   peaks,
   embers,
   compact = false,
+  animateOnHover = false,
 }: {
   compact?: boolean;
+  animateOnHover?: boolean;
   side: "l" | "r";
   height: number;
   seed: number;
@@ -234,7 +236,11 @@ export function AsciiFire({
       }
     };
 
-    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+    const hoverTarget = animateOnHover ? canvas.closest("a") : null;
+    const hoverMedia = matchMedia("(hover: hover)");
+    let hovered = hoverMedia.matches && (hoverTarget?.matches(":hover") ?? false);
+    let disposed = false;
     let timer = 0;
     let visible = false;
     let ready = false;
@@ -250,10 +256,12 @@ export function AsciiFire({
       timer = 0;
     };
     const run = () => {
-      if (timer || !ready || reduced || !visible || document.hidden) return;
+      if (timer || !ready || reducedMotion.matches || !visible || document.hidden) return;
+      if (animateOnHover && !hovered) return;
       timer = window.setInterval(tick, FRAME_MS);
     };
     const start = () => {
+      if (disposed) return;
       ready = true;
       readTheme();
       layout(canvas.clientWidth);
@@ -283,6 +291,18 @@ export function AsciiFire({
     io.observe(canvas);
     const onVisibility = () => (document.hidden ? stop() : run());
     document.addEventListener("visibilitychange", onVisibility);
+    const onPointerEnter = (event: PointerEvent) => {
+      hovered = hoverMedia.matches && event.pointerType !== "touch";
+      run();
+    };
+    const onPointerLeave = () => {
+      hovered = false;
+      stop();
+    };
+    const onMotionChange = () => (reducedMotion.matches ? stop() : run());
+    hoverTarget?.addEventListener("pointerenter", onPointerEnter);
+    hoverTarget?.addEventListener("pointerleave", onPointerLeave);
+    reducedMotion.addEventListener("change", onMotionChange);
     const root = canvas.closest(".lander");
     const mo = new MutationObserver(() => {
       readTheme();
@@ -291,14 +311,18 @@ export function AsciiFire({
     if (root) mo.observe(root, { attributes: true, attributeFilter: ["data-theme"] });
 
     return () => {
+      disposed = true;
       stop();
+      hoverTarget?.removeEventListener("pointerenter", onPointerEnter);
+      hoverTarget?.removeEventListener("pointerleave", onPointerLeave);
+      reducedMotion.removeEventListener("change", onMotionChange);
       window.clearTimeout(resizeTimer);
       ro.disconnect();
       io.disconnect();
       mo.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [side, height, seed, peaks, embers]);
+  }, [side, height, seed, peaks, embers, animateOnHover]);
 
   return <canvas ref={ref} aria-hidden className={cn("fire", compact && "fire-compact", side === "l" ? "fire-l" : "fire-r")} style={{ height }} />;
 }

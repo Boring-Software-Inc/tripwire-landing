@@ -2,6 +2,8 @@
   --grid: color-mix(in srgb, var(--ink) 8%, transparent);
   --grid-mark: color-mix(in srgb, var(--ink) 28%, transparent);
   --shell-hover: color-mix(in srgb, var(--shell), var(--ink) 4%);
+  --nav-surface: var(--page);
+  --nav-hover: color-mix(in srgb, var(--nav-surface), var(--ink) 8%);
   --col: min(1120px, 100% - 32px);
   --fire-hot: #e8461c;
   --fire-body: #f97316;
@@ -615,5 +617,325 @@
   .lander .rule-enter,
   .lander .demo-nope[data-nope] {
     animation: none;
+  }
+}
+
+.lander-nav-row { z-index: 10; }
+
+.lander-nav-row,
+.lander-mega-surface { background-color: var(--nav-surface); }
+
+.lander-nav-bar,
+.lander-drawer-header,
+.lander-nav-actions {
+  display: flex;
+  align-items: center;
+}
+
+.lander-nav-bar,
+.lander-drawer-header {
+  height: 56px;
+  flex: none;
+  justify-content: space-between;
+  color: var(--text-1);
+}
+
+.lander-nav-bar { padding-inline: 0; }
+.lander-nav-actions { gap: 8px; }
+.lander-nav-desktop, .lander-desktop-actions, .lander-mega-anchor { display: none; }
+
+.lander-mobile-trigger {
+  display: grid;
+  place-items: center;
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: var(--radius-tag);
+  color: var(--text-1);
+  cursor: pointer;
+}
+
+.lander-nav-bar :is(button, a):focus-visible,
+.lander-mega-surface a:focus-visible,
+.lander-mobile-drawer :is(button, a, summary):focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
+}
+
+.lander-mega-surface,
+.lander-mobile-drawer { color: var(--text-1); }
+
+.lander-mobile-drawer { background: var(--paper); }
+
+.lander-menu-label {
+  display: flex;
+  align-items: center;
+  color: var(--text-2);
+  min-height: 32px;
+  padding-inline: 12px;
+  border-bottom: 1px solid var(--grid);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.lander-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--grid);
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.lander-menu-item > svg { flex: none; }
+.lander-menu-item > span:not(.lander-menu-icon, .lander-menu-item-fire) { display: grid; gap: 3px; min-width: 0; }
+.lander-menu-icon { display: grid; flex: none; width: 24px; height: 24px; place-items: center; }
+.lander-menu-item strong { font-weight: 550; letter-spacing: -0.01em; }
+.lander-menu-item small { color: var(--text-2); font-size: 13px; line-height: 17px; }
+a.lander-menu-item:focus-visible { background-color: var(--nav-hover); }
+
+@media (hover: hover) {
+  .lander-nav-list :is(button, a):hover,
+  a.lander-menu-item:hover { background-color: var(--nav-hover); }
+
+  .lander-pilot-art:hover img { filter: brightness(0.96); }
+  .lander[data-theme="dark"] .lander-pilot-art:hover img { filter: brightness(1.1); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .lander-nav-list :is(button, a),
+  a.lander-menu-item { transition: background-color 140ms ease; }
+
+  .lander-pilot-art img { transition: filter 140ms ease; }
+}
+
+.lander-pilot-link { justify-content: space-between; min-height: 56px; }
+.lander-pilot-art { display: block; border-bottom: 1px solid var(--grid); }
+.lander-pilot-art img { display: block; width: 100%; height: auto; }
+.lander-pilot-art .lander-pilot-dark,
+.lander[data-theme="dark"] .lander-pilot-art .lander-pilot-light { display: none; }
+.lander[data-theme="dark"] .lander-pilot-art .lander-pilot-dark { display: block; }
+
+.lander-mobile-drawer[open] {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+html:has(.lander-mobile-drawer[open]) { overflow: hidden; }
+
+.lander-drawer-header {
+  padding-inline: 16px;
+}
+
+.lander-drawer-links {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 12px 16px 20px;
+}
+
+@media (max-width: 1023px) {
+  .lander .col { border-inline: 0; }
+  .lander .plus { display: none; }
+  .lander-nav-row + main > .row:first-child { border-block-start: 0; }
+}
+
+.lander-drawer-links .lander-menu-item {
+  min-height: 48px;
+  border: 0;
+}
+
+.lander-drawer-links .lander-menu-item small { display: none; }
+.lander-drawer-links .lander-menu-label { border: 0; }
+.lander-drawer-links ul + .lander-menu-label { margin-block-start: 16px; }
+
+.lander-drawer-secondary {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 4px;
+  margin-block-start: 12px;
+  padding-inline: 12px;
+  font-size: 13px;
+}
+
+.lander-drawer-secondary :is(a, summary, span) {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+}
+
+.lander-drawer-secondary summary { cursor: pointer; }
+
+
+.lander-drawer-footer {
+  flex: none;
+  padding: 16px 28px max(16px, env(safe-area-inset-bottom));
+}
+
+.lander-drawer-footer .lander-nav-actions { justify-content: space-between; }
+.lander-nav-bar [aria-disabled],
+.lander-drawer-secondary [aria-disabled],
+.lander-mega-resources [aria-disabled] { color: var(--text-2); }
+
+@media (min-width: 1024px) {
+  .lander-nav-bar { height: 72px; padding-inline: 27px; }
+  .lander-nav-desktop { display: flex; align-items: stretch; height: 100%; }
+  .lander-desktop-actions { display: block; }
+  .lander-mobile-trigger { display: none; }
+  .lander-nav-list { display: flex; align-items: stretch; height: 100%; }
+  .lander-nav-list > li > :is(a, button, [aria-disabled="true"]) {
+    display: flex;
+    /* Keep sibling triggers reachable while Base UI guards the hover path into the panel. */
+    pointer-events: auto;
+    align-items: center;
+    gap: 8px;
+    height: 100%;
+    padding-inline: 10px;
+    font-size: 14px;
+    line-height: 18px;
+    white-space: nowrap;
+  }
+
+  .lander-nav-trigger { position: relative; cursor: pointer; }
+  .lander-nav-indicator {
+    position: absolute;
+    inset: auto 0 0;
+    height: 2px;
+    background: var(--brand-fire-body);
+    pointer-events: none;
+  }
+  .lander-nav-chevron { transition: rotate 220ms ease; }
+  .lander-nav-trigger[data-popup-open] .lander-nav-chevron { rotate: 180deg; }
+
+  .lander-mega-anchor {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-start: 50%;
+    display: block;
+    inline-size: 100dvw;
+    block-size: 0;
+    translate: -50% 0;
+    pointer-events: none;
+  }
+
+  .lander-menu-backdrop {
+    position: fixed;
+    inset: 72px 0 0;
+    z-index: 9;
+    background: var(--scrim);
+    opacity: 1;
+    transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .lander-menu-backdrop[data-open] { pointer-events: auto !important; }
+  .lander-menu-backdrop:is([data-starting-style], [data-ending-style]) { opacity: 0; }
+  .lander-menu-backdrop[data-ending-style] { transition-delay: 100ms; }
+
+  .lander-mega-positioner { z-index: 11; width: var(--anchor-width); }
+
+  .lander-mega-surface {
+    position: relative;
+    height: var(--popup-height, auto);
+    overflow: clip;
+    clip-path: inset(0);
+    transition:
+      height 380ms cubic-bezier(0.22, 1, 0.36, 1),
+      clip-path 380ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .lander-mega-surface:is([data-starting-style], [data-ending-style]) {
+    clip-path: inset(0 0 100% 0);
+  }
+
+  .lander-mega-surface[data-ending-style] { transition-duration: 260ms; }
+  .lander-mega-viewport { position: relative; }
+  .lander-menu-panel {
+    width: 100%;
+    opacity: 1;
+    translate: 0;
+    transition: opacity 210ms ease, translate 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .lander-menu-panel:is([data-starting-style], [data-ending-style]) { opacity: 0; }
+  .lander-menu-panel[data-closed] { pointer-events: none; }
+  .lander-menu-panel:where([data-activation-direction="right"][data-starting-style], [data-activation-direction="left"][data-ending-style]) { translate: 40px 0; }
+  .lander-menu-panel:where([data-activation-direction="left"][data-starting-style], [data-activation-direction="right"][data-ending-style]) { translate: -40px 0; }
+
+  .lander-mega-menu {
+    display: grid;
+    grid-template-columns: 400fr 280fr 408fr;
+    align-items: stretch;
+    gap: 16px;
+    width: var(--col);
+    min-height: min(425px, var(--available-height));
+    margin-inline: auto;
+    max-height: var(--available-height);
+    overflow: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lander-menu-backdrop,
+    .lander-mega-surface,
+    .lander-menu-panel,
+    .lander-nav-chevron { transition: none; }
+
+    .lander-menu-panel:is([data-starting-style], [data-ending-style]) { translate: none; }
+  }
+
+  .lander-mega-menu > section { min-width: 0; padding-block-start: 4px; border-inline: 1px solid var(--grid); }
+  .lander-mega-menu .lander-menu-label { min-height: 50px; padding-inline: 23px; }
+  .lander-mega-menu .lander-menu-item { min-height: 84px; padding-inline: 23px; }
+  .lander-mega-menu:not(.lander-mega-resources) section:first-child li > .lander-menu-item { min-height: 70px; }
+  .lander-mega-menu li > .lander-menu-item {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    align-items: start;
+    align-content: center;
+    gap: 3px;
+  }
+  .lander-mega-menu .lander-menu-copy strong { display: flex; align-items: center; min-height: 24px; }
+  .lander-mega-menu .lander-pilot-link { min-height: 57px; }
+  .lander-mega-menu .lander-menu-docs { min-height: 46px; }
+
+  .lander-mega-resources { min-height: 0; }
+  .lander-mega-menu a.lander-menu-item { position: relative; isolation: isolate; overflow: clip; }
+
+  .lander-menu-item-fire {
+    position: absolute;
+    inset: auto 0 0 auto;
+    z-index: -1;
+    width: 100px;
+    height: 42px;
+    opacity: 0;
+    pointer-events: none;
+    mask-image: linear-gradient(to right, transparent, black 55%);
+  }
+
+  .lander .lander-menu-item-fire .fire {
+    position: absolute;
+    inset: auto 0 0;
+    display: block;
+    width: 100%;
+    font-family: var(--font-mono);
+    pointer-events: none;
+  }
+
+  @media (hover: hover) {
+    .lander-menu-item:hover .lander-menu-item-fire { opacity: 0.38; }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .lander-menu-item-fire { transition: opacity 140ms ease; }
   }
 }

@@ -1,8 +1,9 @@
 import type { CSSProperties } from "react";
 import "@/components/glaze/styles.css";
 import "./landing.css";
+import { Nav } from "@/components/landing/navigation";
 import { ThemeScript } from "@/components/landing/theme-script";
-import { ClosingCta, Features, Footer, Forges, Hero, Nav, Outcomes, Product, Rules } from "@/components/landing/sections";
+import { ClosingCta, Features, Footer, Forges, Hero, Outcomes, Product, Rules } from "@/components/landing/sections";
 import { geist, geistMono } from "@/lib/fonts";
 import { GlazePortalProvider } from "@/lib/glaze/portal";
 

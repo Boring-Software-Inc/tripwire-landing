@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import RequestAccessCta from "@/components/RequestAccessCta";
 import { buttonVariants } from "@/components/glaze/ui/button-variants";
 import { AppWindow, PhoneWindow } from "@/components/landing/app-window";
@@ -22,24 +22,6 @@ const PEAKS: Record<"heroL" | "heroR" | "ctaL" | "ctaR", Peak[]> = {
   ctaL: [[37.51, 0.953, 6.9], [27.63, 0.391, 4.88], [15.78, 0.515, 4.02], [7.37, 0.301, 3.61], [-3.15, 0.329, 4.88]],
   ctaR: [[36.87, 0.989, 7.53], [28.58, 0.666, 4.41], [21.33, 0.7, 3.27], [12.5, 0.478, 4.27], [4.75, 0.588, 5.0]],
 };
-
-export function Nav() {
-  return (
-    <Row as="header" plain>
-      <nav aria-label="Main" className="flex h-14 items-center justify-between pr-2 pl-4 lg:h-[72px] lg:px-7">
-        <Link href="/" aria-label="Tripwire home" className="rounded-tag">
-          <Lockup size={22} logoClass="size-[18px] lg:size-[22px]" wordClass="t-word text-text-1" />
-        </Link>
-        <div className="flex items-center gap-0.5 lg:gap-2">
-          <a href={APP.login} data-track="sign_in_click" data-placement="nav" className="t-nav flex h-11 items-center px-2.5 text-text-1 lg:h-9 lg:px-3">
-            <span className="link-draw">Sign in</span>
-          </a>
-          <RequestAccessCta placement="nav" />
-        </div>
-      </nav>
-    </Row>
-  );
-}
 
 function SignInButton({ placement }: { placement: "hero" | "bottom" }) {
   return (
@@ -150,7 +132,7 @@ function FeatureCaption({ feature, phone }: { feature: (typeof FEATURES)[number]
 
 export function Features() {
   return (
-    <>
+    <div id="workflows">
       <Row className="only-lg">
         <div className="flex">
           {FEATURES.map((f, i) => (
@@ -169,7 +151,7 @@ export function Features() {
           </article>
         </Row>
       ))}
-    </>
+    </div>
   );
 }
 
