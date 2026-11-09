@@ -295,6 +295,9 @@ export function Footer() {
     <Row as="footer">
       <div className="flex flex-col gap-3 px-5 pt-6 pb-10 lg:flex-row lg:items-center lg:justify-between lg:px-9 lg:pt-7 lg:pb-14">
         <Lockup size={18} wordClass="text-[14px] leading-4 font-medium tracking-[-0.01em] text-text-1" />
+        <Link href="/pilot" className="type-caption text-text-2 hover:text-text-1">
+          <span className="link-draw">Pilot</span>
+        </Link>
         <p className="type-caption text-text-2">
           © 2026{" "}
           <a href="https://boringsoftware.net" className="text-text-2 hover:text-text-1">
