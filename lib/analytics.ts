@@ -10,6 +10,10 @@ type Events = {
   beta_signup_result: { placement: Placement; status: "pending" | "approved" | "rejected" | "error"; seconds: number };
   beta_signup_abandoned: { placement: Placement; seconds: number; reason: "popup_closed" | "left_page" };
   demo_interaction: { surface: string; element: string };
+  pilot_search_submit: { query_length: number };
+  pilot_search_results:
+    | { status: "available"; matches: number; page: number }
+    | { status: "unavailable"; page: number };
 };
 
 export function trackEvent<E extends keyof Events>(name: E, props: Events[E]) {

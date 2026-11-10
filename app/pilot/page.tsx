@@ -12,6 +12,7 @@ import { APP } from "@/lib/content";
 import { geist, geistMono } from "@/lib/fonts";
 import { GlazePortalProvider } from "@/lib/glaze/portal";
 import { loadPilotDirectory, loadPilotStars, PILOT_API, PILOT_REPOSITORY } from "./data";
+import { PilotSearchForm, PilotSearchResultsEvent } from "./pilot-search";
 import styles from "./pilot.module.css";
 
 const TITLE = "Pilot | Tripwire";
@@ -88,8 +89,8 @@ export default async function PilotPage({
               <Lockup size={22} wordClass="type-label-lg" />
             </Link>
             <div className={styles.actions}>
-              <a className={secondary} href={`${PILOT_REPOSITORY}/issues/new?${APPEAL}`}>Appeal a block</a>
-              <a className={secondary} href={PILOT_REPOSITORY}>
+              <a className={secondary} href={`${PILOT_REPOSITORY}/issues/new?${APPEAL}`} data-track="pilot_appeal_click">Appeal a block</a>
+              <a className={secondary} href={PILOT_REPOSITORY} data-track="pilot_star_click">
                 <Icon icon={GithubMark} />
                 View on GitHub
                 {stars !== null ? <span className={styles.muted}>{`${stars.toLocaleString("en-US")} ${stars === 1 ? "star" : "stars"}`}</span> : null}
@@ -102,6 +103,10 @@ export default async function PilotPage({
             <p className={styles.muted}>{DESCRIPTION}</p>
           </header>
 
+          {q ? (
+            <PilotSearchResultsEvent key={pageHref(q, page)} matches={directory?.matches ?? null} page={directory?.page ?? page} />
+          ) : null}
+
           <section className="shell" aria-labelledby="pilot-accounts">
             <div className="panel">
               {showSearch && directory ? (
@@ -113,11 +118,7 @@ export default async function PilotPage({
                         `${directory.total} ${directory.total === 1 ? "account" : "accounts"}`}
                     </p>
                   </div>
-                  <form action="/pilot" method="get" className={styles.search}>
-                    <input className="field" aria-label="GitHub username" placeholder="GitHub username"
-                      name="q" type="search" maxLength={100} defaultValue={q} />
-                    <button className={secondary} type="submit">Search</button>
-                  </form>
+                  <PilotSearchForm key={q} query={q} buttonClassName={secondary} />
                 </header>
               ) : null}
               {directory?.entries.length ? (
@@ -126,7 +127,7 @@ export default async function PilotPage({
                   <tbody>
                     {directory.entries.map((entry) => (
                       <tr key={entry.accountId}>
-                        <td><a className={styles.account} href={`https://github.com/${encodeURIComponent(entry.login)}`}>
+                        <td><a className={styles.account} href={`https://github.com/${encodeURIComponent(entry.login)}`} data-track={q ? "pilot_search_result_click" : undefined}>
                           <Image alt="" width={20} height={20} unoptimized
                             src={`https://avatars.githubusercontent.com/u/${entry.accountId}?s=40&v=4`} />
                           <span>@{entry.login}</span>
