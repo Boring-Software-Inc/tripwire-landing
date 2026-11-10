@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: "/api/blocklist",
+        destination: "https://app.tripwire.sh/api/blocklist",
+        permanent: true,
+      },
+    ];
+  },
   turbopack: {
     // A stray lockfile exists in the home directory; pin the workspace root.
     root: __dirname,
